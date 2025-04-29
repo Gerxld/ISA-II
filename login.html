@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="estilos/login.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="img/logo.png" alt="Logo" class="logo">
+            <h1>Transporte Hector Murillo</h1>
+        </header>
+        <main>
+            <form id="login-form">
+                <h2>Iniciar Sesión</h2>
+                <input type="email" id="email" placeholder="Correo Electrónico" maxlength="35" required>
+                <input type="password" id="password" placeholder="Contraseña" maxlength="35" required>
+                <button type="submit">Ingresar</button>
+            </form>
+            <div class="register">
+                <p>¿No tienes cuenta? <a href="registrar.html">Registrarse</a></p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.getElementById('login-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (email === 'juanito.golondrina@gmail.com' && password === '12345') {
+                localStorage.setItem('usuario', 'cliente');
+                alert('¡Bienvenid@ de vuelta!');
+                window.location.href = 'cotizar.html';
+            } else if (email === 'admin.jefe@gmail.com' && password === '6789') {
+                localStorage.setItem('usuario', 'admin');
+                alert('¡Bienvenid@ de vuelta!');
+                window.location.href = 'solicitudes.html';
+            } else {
+                alert('Credenciales incorrectas.');
+            }
+        });
+    </script>
+</body>
+</html>

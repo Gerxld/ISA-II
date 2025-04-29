@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solicitudes</title>
+  <link rel="stylesheet" href="estilos/solicitudes.css">
+</head>
+<body>
+
+<header>
+  <nav class="menu">
+    <ul></ul>
+  </nav>
+</header>
+
+<div class="container">
+  <main>
+    <h1>Solicitudes de Servicios</h1>
+
+    <section class="pendientes">
+      <h2>Solicitudes Pendientes</h2>
+      <div id="pendientes-container" class="solicitudes-container"></div>
+    </section>
+
+    <section class="rechazadas">
+      <h2>Solicitudes Rechazadas</h2>
+      <div id="rechazadas-container" class="solicitudes-container"></div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const userType = localStorage.getItem('usuario');
+  const menu = document.querySelector('.menu ul');
+
+  if (menu) {
+    menu.innerHTML = '<li><img src="img/logo.png" alt="Logo" class="logo"></li>';
+
+    if (userType === 'admin') {
+      menu.innerHTML += `
+        <li><a href="solicitudes.html" class="active">Solicitudes</a></li>
+        <li><a href="agenda.html">Agenda</a></li>
+        <li><a href="inventario.html">Inventario</a></li>
+        <li><a href="colaboradores.html">Colaboradores</a></li>
+        <li><a href="#" id="logout">Cerrar sesión</a></li>
+      `;
+    } else {
+      alert('Acceso no autorizado.');
+      window.location.href = 'index.html';
+    }
+  }
+
+  const logout = document.getElementById('logout');
+  if (logout) {
+    logout.addEventListener('click', function() {
+      localStorage.removeItem('usuario');
+      window.location.href = 'login.html';
+    });
+  }
+
+  // Simulación de solicitudes
+  const solicitudes = [
+    { id: 1, cliente: "Pedro Torres", descripcion: "Mudanza oficina", estado: "pendiente" },
+    { id: 2, cliente: "Laura Jiménez", descripcion: "Acarreo muebles", estado: "pendiente" }
+  ];
+
+  const pendientes = document.getElementById('pendientes-container');
+  const rechazadas = document.getElementById('rechazadas-container');
+
+  function cargarSolicitudes() {
+    pendientes.innerHTML = '';
+    rechazadas.innerHTML = '';
+
+    solicitudes.forEach(solicitud => {
+      const card = document.createElement('div');
+      card.className = 'solicitud-card';
+      card.innerHTML = `
+        <h3>${solicitud.cliente}</h3>
+        <p>${solicitud.descripcion}</p>
+      `;
+
+      if (solicitud.estado === 'pendiente') {
+        const aceptarBtn = document.createElement('button');
+        aceptarBtn.textContent = 'Aceptar';
+        aceptarBtn.className = 'aceptar';
+        aceptarBtn.onclick = () => aceptarSolicitud(solicitud.id);
+
+        const rechazarBtn = document.createElement('button');
+        rechazarBtn.textContent = 'Declinar';
+        rechazarBtn.className = 'rechazar';
+        rechazarBtn.onclick = () => rechazarSolicitud(solicitud.id);
+
+        card.appendChild(aceptarBtn);
+        card.appendChild(rechazarBtn);
+
+        pendientes.appendChild(card);
+      } else if (solicitud.estado === 'rechazada') {
+        const eliminarBtn = document.createElement('button');
+        eliminarBtn.textContent = 'Eliminar';
+        eliminarBtn.className = 'eliminar';
+        eliminarBtn.onclick = () => eliminarSolicitud(solicitud.id);
+
+        card.appendChild(eliminarBtn);
+
+        rechazadas.appendChild(card);
+      }
+    });
+  }
+
+  function aceptarSolicitud(id) {
+    const solicitud = solicitudes.find(s => s.id === id);
+    if (solicitud) {
+      solicitud.estado = 'aceptada';
+      alert('Solicitud aceptada y agregada a agenda.');
+      cargarSolicitudes();
+    }
+  }
+
+  function rechazarSolicitud(id) {
+    const solicitud = solicitudes.find(s => s.id === id);
+    if (solicitud) {
+      solicitud.estado = 'rechazada';
+      cargarSolicitudes();
+    }
+  }
+
+  function eliminarSolicitud(id) {
+    const index = solicitudes.findIndex(s => s.id === id);
+    if (index !== -1) {
+      solicitudes.splice(index, 1);
+      cargarSolicitudes();
+    }
+  }
+
+  cargarSolicitudes();
+</script>
+
+</body>
+</html>

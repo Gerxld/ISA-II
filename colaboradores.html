@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Colaboradores</title>
+  <link rel="stylesheet" href="estilos/colaboradores.css">
+</head>
+<body>
+
+<header>
+  <nav class="menu">
+    <ul></ul>
+  </nav>
+</header>
+
+<div class="container">
+  <main>
+    <h1>Listado de Colaboradores</h1>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Identificación</th>
+            <th>Especialidad</th>
+            <th>Pago x Hora</th>
+          </tr>
+        </thead>
+        <tbody id="colaboradores-body">
+          <!-- Colaboradores cargados aquí -->
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  const userType = localStorage.getItem('usuario');
+  const menu = document.querySelector('.menu ul');
+
+  if (menu) {
+    menu.innerHTML = '<li><img src="img/logo.png" alt="Logo" class="logo"></li>';
+
+    if (userType === 'admin') {
+      menu.innerHTML += `
+        <li><a href="solicitudes.html">Solicitudes</a></li>
+        <li><a href="agenda.html">Agenda</a></li>
+        <li><a href="inventario.html">Inventario</a></li>
+        <li><a href="colaboradores.html" class="active">Colaboradores</a></li>
+        <li><a href="#" id="logout">Cerrar sesión</a></li>
+      `;
+    } else {
+      alert('Acceso no autorizado.');
+      window.location.href = 'index.html';
+    }
+  }
+
+  const logout = document.getElementById('logout');
+  if (logout) {
+    logout.addEventListener('click', function() {
+      localStorage.removeItem('usuario');
+      window.location.href = 'login.html';
+    });
+  }
+
+  // Simulación de colaboradores
+  const colaboradores = [
+    { nombre: "Juan Pérez", id: "123456789", especialidad: "Conductor de camión", pago: "$10/h" },
+    { nombre: "Ana Gómez", id: "987654321", especialidad: "Operador de grúa", pago: "$12/h" },
+    { nombre: "Carlos Rodríguez", id: "456789123", especialidad: "Gestión de carga", pago: "$11/h" }
+  ];
+
+  const tbody = document.getElementById('colaboradores-body');
+
+  function cargarColaboradores() {
+    tbody.innerHTML = '';
+    colaboradores.forEach(colab => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${colab.nombre}</td>
+        <td>${colab.id}</td>
+        <td>${colab.especialidad}</td>
+        <td>${colab.pago}</td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  cargarColaboradores();
+</script>
+
+</body>
+</html>
