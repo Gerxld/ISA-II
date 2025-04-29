@@ -52,11 +52,37 @@
           <label>Colaboradores Recomendados:</label>
           <div id="colaboradores-lista"></div>
 
-          <label for="ubiPartida">Punto de partida:</label>
-          <input type="text" id="ubiPartida">
+          <!-- Dirección de Partida -->
+          <h3>Dirección de Partida</h3>
 
-          <label for="ubiLlegada">Punto de llegada:</label>
-          <input type="text" id="ubiLlegada">
+          <label for="provincia-partida">Provincia:</label>
+          <select id="provincia-partida" required></select>
+
+          <label for="distrito-partida">Ciudad / Distrito:</label>
+          <select id="distrito-partida" required></select>
+
+          <label for="corregimiento-partida">Barrio / Corregimiento:</label>
+          <select id="corregimiento-partida" required></select>
+
+          <label for="direccionPartida">Dirección Específica:</label>
+          <input type="text" id="direccionPartida" placeholder="Ejemplo: Calle 1ra, Casa 24A" required>
+
+          <hr>
+
+          <!-- Dirección de Llegada -->
+          <h3>Dirección de Llegada</h3>
+
+          <label for="provincia-llegada">Provincia:</label>
+          <select id="provincia-llegada" required></select>
+
+          <label for="distrito-llegada">Ciudad / Distrito:</label>
+          <select id="distrito-llegada" required></select>
+
+          <label for="corregimiento-llegada">Barrio / Corregimiento:</label>
+          <select id="corregimiento-llegada" required></select>
+
+          <label for="direccionLlegada">Dirección Específica:</label>
+          <input type="text" id="direccionLlegada" placeholder="Ejemplo: Avenida 2da, Edificio Don Pepe" required>
 
           <label for="descripcion">Descripción del Trabajo:</label>
           <textarea id="descripcion" placeholder="Escriba la descripción del servicio" rows="5" style="resize: none;" required></textarea>
@@ -199,14 +225,146 @@ const costoAdicionalTrabajo = {
   "Mudanza Internas": 500
 };
 
+
+// Datos de Provincias, Ciudades y Barrios
+const ubicaciones = {
+  "Panamá": {
+    "Ciudad de Panamá": ["Bethania", "San Francisco", "Juan Díaz"],
+    "San Miguelito": ["Belisario Porras", "Arnulfo Arias", "Victoriano Lorenzo"]
+  },
+  "Panamá Oeste": {
+    "Arraiján": ["Vista Alegre", "Burunga", "Juan Demóstenes Arosemena"],
+    "La Chorrera": ["Barrio Colón", "Barrio Balboa", "Playa Leona"]
+  },
+  "Colón": {
+    "Colón": ["Cristóbal Este", "Cativá", "Sabanitas"],
+    "Portobelo": ["Portobelo", "Cacique", "Isla Grande"]
+  },
+  "Chiriquí": {
+    "David": ["Barrio Bolívar", "Barrio Sur", "Barrio Norte"],
+    "Boquete": ["Alto Boquete", "Los Naranjos", "Palmira"]
+  },
+  "Veraguas": {
+    "Santiago": ["Canto del Llano", "San Martín de Porres", "Carlos Santana Ávila"],
+    "Soná": ["Soná Cabecera", "Bahía Honda", "Calidonia"]
+  },
+  "Coclé": {
+    "Penonomé": ["Penonomé Cabecera", "Chiguirí Arriba", "Río Grande"],
+    "Aguadulce": ["Aguadulce Cabecera", "El Cristo", "Pocrí"]
+  },
+  "Los Santos": {
+    "Las Tablas": ["Las Tablas Cabecera", "La Palma", "Santo Domingo"],
+    "Guararé": ["Guararé Cabecera", "El Espinal", "Perales"]
+  },
+  "Herrera": {
+    "Chitré": ["Chitré Cabecera", "La Arena", "Monagrillo"],
+    "Parita": ["Parita Cabecera", "Llano Grande", "Potuga"]
+  },
+  "Bocas del Toro": {
+    "Bocas del Toro": ["Bastimentos", "Isla Colón", "Cauchero"],
+    "Changuinola": ["Changuinola Cabecera", "El Empalme", "Guabito"]
+  },
+  "Darién": {
+    "La Palma": ["La Palma Cabecera", "Garachiné", "Chepigana"],
+    "Chepigana": ["Sambú", "Setegantí", "Taimatí"]
+  }
+};
+
+// ---------------------------
+// Para Dirección de Partida
+// ---------------------------
+const provinciaPartida = document.getElementById("provincia-partida");
+const distritoPartida = document.getElementById("distrito-partida");
+const corregimientoPartida = document.getElementById("corregimiento-partida");
+
+function cargarProvinciasPartida() {
+  provinciaPartida.innerHTML = '<option value="">Seleccione provincia</option>';
+  for (let prov in ubicaciones) {
+    provinciaPartida.innerHTML += `<option value="${prov}">${prov}</option>`;
+  }
+}
+
+function cargarDistritosPartida() {
+  const prov = provinciaPartida.value;
+  distritoPartida.innerHTML = '<option value="">Seleccione distrito</option>';
+  corregimientoPartida.innerHTML = '<option value="">Seleccione corregimiento</option>';
+  if (ubicaciones[prov]) {
+    for (let dist in ubicaciones[prov]) {
+      distritoPartida.innerHTML += `<option value="${dist}">${dist}</option>`;
+    }
+  }
+}
+
+function cargarCorregimientosPartida() {
+  const prov = provinciaPartida.value;
+  const dist = distritoPartida.value;
+  corregimientoPartida.innerHTML = '<option value="">Seleccione corregimiento</option>';
+  if (ubicaciones[prov] && ubicaciones[prov][dist]) {
+    ubicaciones[prov][dist].forEach(corr => {
+      corregimientoPartida.innerHTML += `<option value="${corr}">${corr}</option>`;
+    });
+  }
+}
+
+provinciaPartida.addEventListener("change", cargarDistritosPartida);
+distritoPartida.addEventListener("change", cargarCorregimientosPartida);
+
+cargarProvinciasPartida();
+
+// ---------------------------
+// Para Dirección de Llegada
+// ---------------------------
+const provinciaLlegada = document.getElementById("provincia-llegada");
+const distritoLlegada = document.getElementById("distrito-llegada");
+const corregimientoLlegada = document.getElementById("corregimiento-llegada");
+
+function cargarProvinciasLlegada() {
+  provinciaLlegada.innerHTML = '<option value="">Seleccione provincia</option>';
+  for (let prov in ubicaciones) {
+    provinciaLlegada.innerHTML += `<option value="${prov}">${prov}</option>`;
+  }
+}
+
+function cargarDistritosLlegada() {
+  const prov = provinciaLlegada.value;
+  distritoLlegada.innerHTML = '<option value="">Seleccione distrito</option>';
+  corregimientoLlegada.innerHTML = '<option value="">Seleccione corregimiento</option>';
+  if (ubicaciones[prov]) {
+    for (let dist in ubicaciones[prov]) {
+      distritoLlegada.innerHTML += `<option value="${dist}">${dist}</option>`;
+    }
+  }
+}
+
+function cargarCorregimientosLlegada() {
+  const prov = provinciaLlegada.value;
+  const dist = distritoLlegada.value;
+  corregimientoLlegada.innerHTML = '<option value="">Seleccione corregimiento</option>';
+  if (ubicaciones[prov] && ubicaciones[prov][dist]) {
+    ubicaciones[prov][dist].forEach(corr => {
+      corregimientoLlegada.innerHTML += `<option value="${corr}">${corr}</option>`;
+    });
+  }
+}
+
+provinciaLlegada.addEventListener("change", cargarDistritosLlegada);
+distritoLlegada.addEventListener("change", cargarCorregimientosLlegada);
+
+cargarProvinciasLlegada();
+
+// Cargar ciudades y barrios al cambiar provincia
+
 // Guardar solicitud
 function guardarSolicitud() {
   const cliente = document.getElementById("nombreCliente").value;
   const numero = document.getElementById("numeroCliente").value;
   const fechaServicio = document.getElementById("fechaServicio").value;
   const tipoTrabajo = document.getElementById("tiposTrabajos").value;
-  const ubiPartida = document.getElementById("ubiPartida").value;
-  const ubiLlegada = document.getElementById("ubiLlegada").value;
+
+  // Nueva forma de capturar direcciones
+  const direccionPartida = `${document.getElementById("provinciaPartida").value}, ${document.getElementById("ciudadPartida").value}, ${document.getElementById("barrioPartida").value}, ${document.getElementById("direccionPartida").value}`;
+  const direccionLlegada = `${document.getElementById("provinciaLlegada").value}, ${document.getElementById("ciudadLlegada").value}, ${document.getElementById("barrioLlegada").value}, ${document.getElementById("direccionLlegada").value}`;
+
   const descripcion = document.getElementById("descripcion").value;
 
   const { total: totalServicios, serviciosDetalle } = calcularTotalServicios();
@@ -226,15 +384,18 @@ function guardarSolicitud() {
     <p><strong>Costo Mano de Obra:</strong> $${costoMano}</p>
     <p><strong>Costo Adicional:</strong> $${adicional}</p>
     <p><strong>Suma Final:</strong> $${sumaFinal}</p>
-    <p><strong>Punto de partida:</strong> ${ubiPartida}</p>
-    <p><strong>Punto de llegada:</strong> ${ubiLlegada}</p>
+    <h4>Direcciones:</h4>
+    <p><strong>Partida:</strong> ${direccionPartida}</p>
+    <p><strong>Llegada:</strong> ${direccionLlegada}</p>
     <p><strong>Descripción:</strong> ${descripcion}</p>
   `;
+
   document.getElementById("modal-content").innerHTML = contenido;
   document.getElementById("modal").style.display = "flex";
 
   document.getElementById("cotizarForm").reset();
 }
+
 
 function calcularTotalServicios() {
   let total = 0;
