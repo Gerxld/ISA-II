@@ -123,35 +123,25 @@
     }
 
     function aceptarSolicitud(id) {
+      let solicitudes = JSON.parse(localStorage.getItem('solicitudes')) || [];
+      let historial = JSON.parse(localStorage.getItem('historial')) || [];
+
       const solicitudIndex = solicitudes.findIndex(s => s.id === id);
       if (solicitudIndex !== -1) {
-        // Obtener la solicitud
-        const solicitudAceptada = solicitudes[solicitudIndex];
-
-        // Cambiar estado a "aceptada"
         solicitudes[solicitudIndex].estado = 'aceptada';
-
-        // Actualizar localStorage de solicitudes
         localStorage.setItem('solicitudes', JSON.stringify(solicitudes));
 
-        // Agregar a la agenda
+        const historialIndex = historial.findIndex(h => h.id === id);
+        if (historialIndex !== -1) {
+          historial[historialIndex].estado = 'aceptada';
+          localStorage.setItem('historial', JSON.stringify(historial));
+        }
+
         let agenda = JSON.parse(localStorage.getItem('agenda')) || [];
-
-        // Crear objeto para la agenda
-        const eventoAgenda = {
-          id: solicitudAceptada.id, // Mismo ID para referencia
-          fecha: solicitudAceptada.fecha,
-          cliente: solicitudAceptada.cliente,
-          contacto: solicitudAceptada.contacto,
-          servicio: solicitudAceptada.servicio,
-          descripcion: solicitudAceptada.descripcion,
-          origen: solicitudAceptada.origen,
-          destino: solicitudAceptada.destino,
-          total: solicitudAceptada.total,
-          estado: 'agendado' // Nuevo estado
-        };
-
-        agenda.push(eventoAgenda);
+        agenda.push({
+          ...solicitudes[solicitudIndex],
+          estado: 'agendado'
+        });
         localStorage.setItem('agenda', JSON.stringify(agenda));
 
         alert('Solicitud aceptada y agregada a la agenda');
@@ -160,10 +150,20 @@
     }
 
     function rechazarSolicitud(id) {
+      let solicitudes = JSON.parse(localStorage.getItem('solicitudes')) || [];
+      let historial = JSON.parse(localStorage.getItem('historial')) || [];
+
       const solicitudIndex = solicitudes.findIndex(s => s.id === id);
       if (solicitudIndex !== -1) {
         solicitudes[solicitudIndex].estado = 'rechazada';
         localStorage.setItem('solicitudes', JSON.stringify(solicitudes));
+
+        const historialIndex = historial.findIndex(h => h.id === id);
+        if (historialIndex !== -1) {
+          historial[historialIndex].estado = 'rechazada';
+          localStorage.setItem('historial', JSON.stringify(historial));
+        }
+
         cargarSolicitudes();
       }
     }

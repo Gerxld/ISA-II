@@ -17,6 +17,7 @@
           <li><img src="img/logo.png" alt="Logo" class="logo"></li>
           <li><a href="index.html">Inicio</a></li>
           <li><a href="cotizar.html" class="active">Cotizar</a></li>
+          <li><a href="historial.html" class="active">Mi Historial</a></li>
           <li><a href="agenda.html">Agenda</a></li>
           <li><a href="inventario.html">Inventario</a></li>
           <li><a href="colaboradores.html">Colaboradores</a></li>
@@ -356,9 +357,6 @@
 
     cargarProvinciasLlegada();
 
-    // Cargar ciudades y barrios al cambiar provincia
-
-    // Guardar solicitud
     function guardarSolicitud() {
       const cliente = document.getElementById("nombreCliente").value;
       const numero = document.getElementById("numeroCliente").value;
@@ -375,10 +373,27 @@
       const costoMano = costoManoObra[tipoTrabajo] || 0;
       const adicional = costoAdicionalTrabajo[tipoTrabajo] || 0;
       const sumaFinal = totalServicios + costoMano + adicional;
+      const registroHistorial = {
+        id: Date.now(),
+        usuario: localStorage.getItem('usuarioActual'), 
+        fecha: new Date().toISOString(),
+        cliente: cliente,
+        contacto: numero,
+        servicio: tipoTrabajo,
+        descripcion: descripcion,
+        origen: direccionPartida,
+        destino: direccionLlegada,
+        total: sumaFinal,
+        estado: 'pendiente',
+        servicios: serviciosDetalle.map(s => s.nombre)
+      };
 
-      // Crear objeto de solicitud
+      let historial = JSON.parse(localStorage.getItem('historial')) || [];
+      historial.push(registroHistorial);
+      localStorage.setItem('historial', JSON.stringify(historial));
+
       const solicitud = {
-        id: Date.now(), // Usamos el timestamp como ID único
+        id: Date.now(),
         cliente: cliente,
         contacto: numero,
         fecha: fechaServicio,
@@ -388,15 +403,13 @@
         destino: direccionLlegada,
         total: sumaFinal,
         servicios: serviciosDetalle.map(s => s.nombre),
-        estado: "pendiente" // Estado inicial
+        estado: "pendiente"
       };
 
-      // Guardar en localStorage
       let solicitudes = JSON.parse(localStorage.getItem('solicitudes')) || [];
       solicitudes.push(solicitud);
       localStorage.setItem('solicitudes', JSON.stringify(solicitudes));
 
-      // Mostrar en modal
       let contenido = `
     <p><strong>Nombre:</strong> ${cliente}</p>
     <p><strong>Contacto:</strong> ${numero}</p>
@@ -449,6 +462,7 @@
       } else if (userType === 'cliente') {
         menu.innerHTML += `
       <li><a href="cotizar.html" class="active">Cotizar</a></li>
+      <li><a href="historial.html">Mi Historial</a></li>
       <li><a href="#" id="logout">Cerrar sesión</a></li>
     `;
       } else {
