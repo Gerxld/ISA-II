@@ -36,9 +36,34 @@
         </tbody>
       </table>
     </div>
+    <div class="button-group">
+      <button class="add-button" id="btn-agregar">Agregar Agenda</button>
+      <button class="delete-button" id="btn-eliminar">Eliminar Agenda</button>
+    </div>
   </main>
 </div>
+<!-- Modal Agregar -->
+<div class="modal-overlay" id="overlay"></div>
+<div class="modal" id="modalAgregar">
+  <h3>Agregar Servicio</h3>
+  <input id="fecha" type="date" placeholder="Fecha">
+  <input id="cliente" type="text" placeholder="Cliente">
+  <input id="contacto" type="text" placeholder="Contacto">
+  <input id="servicio" type="text" placeholder="Servicio">
+  <input id="descripcion" type="text" placeholder="Descripción">
+  <input id="origen" type="text" placeholder="Ubicación Origen">
+  <input id="destino" type="text" placeholder="Ubicación Destino">
+  <button class="confirm-button" onclick="guardarServicio()">Guardar</button>
+  <button class="cancel-button" onclick="cerrarModal()">Cancelar</button>
+</div>
 
+<!-- Modal Eliminar -->
+<div class="modal" id="modalEliminar">
+  <h3>Eliminar Servicio</h3>
+  <input id="idEliminar" type="text" placeholder="Nombre del Cliente">
+  <button class="confirm-button" onclick="eliminarServicio()">Eliminar</button>
+  <button class="cancel-button" onclick="cerrarModal()">Cancelar</button>
+</div>
 <script>
   const userType = localStorage.getItem('usuario');
   const menu = document.querySelector('.menu ul');
@@ -94,6 +119,51 @@
   }
 
   cargarAgenda();
+  document.getElementById('btn-agregar').onclick = () => {
+    document.getElementById('modalAgregar').classList.add('active');
+    document.getElementById('overlay').classList.add('active');
+  }
+
+  document.getElementById('btn-eliminar').onclick = () => {
+    document.getElementById('modalEliminar').classList.add('active');
+    document.getElementById('overlay').classList.add('active');
+  }
+
+  function cerrarModal() {
+    document.querySelectorAll('.modal').forEach(modal => modal.classList.remove('active'));
+    document.getElementById('overlay').classList.remove('active');
+  }
+
+  function guardarServicio() {
+    const nuevo = {
+      fecha: document.getElementById('fecha').value,
+      cliente: document.getElementById('cliente').value,
+      contacto: document.getElementById('contacto').value,
+      servicio: document.getElementById('servicio').value,
+      descripcion: document.getElementById('descripcion').value,
+      origen: document.getElementById('origen').value,
+      destino: document.getElementById('destino').value
+    };
+    if (nuevo.fecha && nuevo.cliente) {
+      agenda.push(nuevo);
+      cargarAgenda();
+      cerrarModal();
+    } else {
+      alert('Fecha y cliente son obligatorios.');
+    }
+  }
+
+  function eliminarServicio() {
+    const cliente = document.getElementById('idEliminar').value.trim().toLowerCase();
+    const index = agenda.findIndex(s => s.cliente.toLowerCase() === cliente);
+    if (index !== -1) {
+      agenda.splice(index, 1);
+      cargarAgenda();
+      cerrarModal();
+    } else {
+      alert('Cliente no encontrado.');
+    }
+  }
 </script>
 
 </body>

@@ -1,7 +1,7 @@
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 0;
+    padding: 20px;
     background-color: #f9f9f9;
     display: flex;
     justify-content: center;
@@ -15,6 +15,7 @@ body {
   }
   
   .container {
+    margin-top: 120px;
     width: 90%;
     max-width: 900px;
     background: white;
@@ -22,7 +23,7 @@ body {
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
-    margin: 20px;
+    margin: 40px;
     overflow: hidden;
   }
   
@@ -32,9 +33,13 @@ body {
   
   .menu {
     background-color: #9d98e6;
-    padding: 10px;
-    margin-bottom: 20px;
-    border-radius: 8px;
+    border-radius: 20px;
+    top: 20px;
+    left: 40px;
+    right: 40px;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    position: fixed;
   }
   
   .menu ul {
@@ -84,11 +89,6 @@ body {
     margin-bottom: 20px;
   }
   
-.table-container {
-    width: 100%;
-    overflow-x: auto;
-    margin-bottom: 20px;
-}
   
 
 .table-container {
@@ -100,7 +100,6 @@ body {
     border: 1px solid #ddd;
     border-radius: 8px;
 }
-
 
 table {
     width: 100%;
@@ -141,7 +140,19 @@ table th {
   .delete-button {
     background-color: #e41a1a;
   }
+  .button-group {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
   
+  .button-group .add-button,
+  .button-group .delete-button {
+    margin: 0; /* Anula el margin auto que tenías */
+    width: 150px;
+  }
   .modal {
     display: none;
     position: fixed;

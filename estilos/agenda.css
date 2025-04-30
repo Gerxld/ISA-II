@@ -1,7 +1,7 @@
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 0;
+    padding: 0px;
     background-color: #f9f9f9;
     display: flex;
     justify-content: center;
@@ -32,9 +32,13 @@ header {
 
 .menu {
     background-color: #9d98e6;
-    padding: 10px;
-    margin-bottom: 20px;
-    border-radius: 8px;
+    border-radius: 20px;
+    top: 20px;
+    left: 40px;
+    right: 40px;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    position: fixed;
 }
 
 .menu ul {
@@ -144,6 +148,19 @@ button.confirm-delete-button{
     background-color: #4CAF50;
     color: #ffffff;
 }
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+  
+  .button-group .add-button,
+  .button-group .delete-button {
+    margin: 0; /* Anula el margin auto que tenías */
+    width: 150px;
+  }
 .modal {
     display: none;
     position: fixed;
@@ -197,11 +214,15 @@ button.confirm-delete-button{
 .modal .confirm-button {
     background-color: #4CAF50;
     color: white;
-}
-
+  }
+  
 .modal .cancel-button {
     background-color: #f44336;
     color: white;
+  }
+.modal.active,
+.modal-overlay.active {
+  display: block;
 }
 
 /* Estilos responsive */

@@ -33,8 +33,31 @@
         </tbody>
       </table>
     </div>
-
+    <div class="button-group">
+      <button class="add-button" id="btn-agregar">Agregar Colaborador</button>
+      <button class="delete-button" id="btn-eliminar">Eliminar Colaborador</button>
+    </div>
   </main>
+</div>
+<!-- Modal Agregar -->
+<div class="modal-overlay" id="overlay-agregar"></div>
+<div class="modal" id="modal-agregar">
+  <div class="modal-header">Agregar Colaborador</div>
+  <input type="text" placeholder="Nombre" id="nombre">
+  <input type="text" placeholder="Identificación" id="id">
+  <input type="text" placeholder="Especialidad" id="especialidad">
+  <input type="text" placeholder="Pago x Hora" id="pago">
+  <button class="confirm-button" id="guardar-colaborador">Guardar</button>
+  <button class="cancel-button" onclick="cerrarModal('agregar')">Cancelar</button>
+</div>
+
+<!-- Modal Eliminar -->
+<div class="modal-overlay" id="overlay-eliminar"></div>
+<div class="modal" id="modal-eliminar">
+  <div class="modal-header">Eliminar Colaborador</div>
+  <input type="text" placeholder="Identificación a eliminar" id="id-eliminar">
+  <button class="confirm-button" id="confirmar-eliminar">Eliminar</button>
+  <button class="cancel-button" onclick="cerrarModal('eliminar')">Cancelar</button>
 </div>
 
 <script>
@@ -90,6 +113,51 @@
   }
 
   cargarColaboradores();
+    // Abrir y cerrar modales
+    function abrirModal(tipo) {
+    document.getElementById(`modal-${tipo}`).style.display = 'block';
+    document.getElementById(`overlay-${tipo}`).style.display = 'block';
+  }
+
+  function cerrarModal(tipo) {
+    document.getElementById(`modal-${tipo}`).style.display = 'none';
+    document.getElementById(`overlay-${tipo}`).style.display = 'none';
+  }
+
+  document.getElementById('btn-agregar').addEventListener('click', () => abrirModal('agregar'));
+  document.getElementById('btn-eliminar').addEventListener('click', () => abrirModal('eliminar'));
+
+  // Guardar nuevo colaborador
+  document.getElementById('guardar-colaborador').addEventListener('click', () => {
+    const nuevo = {
+      nombre: document.getElementById('nombre').value,
+      id: document.getElementById('id').value,
+      especialidad: document.getElementById('especialidad').value,
+      pago: document.getElementById('pago').value
+    };
+
+    if (nuevo.nombre && nuevo.id && nuevo.especialidad && nuevo.pago) {
+      colaboradores.push(nuevo);
+      cargarColaboradores();
+      cerrarModal('agregar');
+    } else {
+      alert("Por favor, completa todos los campos.");
+    }
+  });
+
+  // Eliminar colaborador por ID
+  document.getElementById('confirmar-eliminar').addEventListener('click', () => {
+    const idEliminar = document.getElementById('id-eliminar').value;
+    const index = colaboradores.findIndex(c => c.id === idEliminar);
+    if (index !== -1) {
+      colaboradores.splice(index, 1);
+      cargarColaboradores();
+      cerrarModal('eliminar');
+    } else {
+      alert("No se encontró un colaborador con esa identificación.");
+    }
+  });
+
 </script>
 
 </body>
