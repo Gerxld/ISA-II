@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="estilos/login.css">
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -26,23 +28,41 @@
     </div>
 
     <script>
-        document.getElementById('login-form').addEventListener('submit', function(event) {
+        document.getElementById('login-form').addEventListener('submit', function (event) {
             event.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
             if (email === 'juanito.golondrina@gmail.com' && password === '12345') {
                 localStorage.setItem('usuario', 'cliente');
+                localStorage.setItem('usuarioActual', email);
                 alert('¡Bienvenid@ de vuelta!');
                 window.location.href = 'cotizar.html';
-            } else if (email === 'admin.jefe@gmail.com' && password === '6789') {
+                return;
+            }
+            if (email === 'admin.jefe@gmail.com' && password === '6789') {
                 localStorage.setItem('usuario', 'admin');
                 alert('¡Bienvenid@ de vuelta!');
                 window.location.href = 'solicitudes.html';
+                return;
+            }
+            const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+
+            const usuarioEncontrado = usuarios.find(usuario =>
+                usuario.correo === email && usuario.password === password
+            );
+
+            if (usuarioEncontrado) {
+                localStorage.setItem('usuario', 'cliente');
+                localStorage.setItem('usuarioActual', email);
+                alert('¡Bienvenid@ ' + usuarioEncontrado.nombre + '!');
+                window.location.href = 'cotizar.html';
             } else {
                 alert('Credenciales incorrectas.');
             }
         });
+
     </script>
+
 </body>
+
 </html>
