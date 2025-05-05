@@ -1,140 +1,186 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Solicitudes</title>
   <link rel="stylesheet" href="estilos/solicitudes.css">
 </head>
+
 <body>
 
-<header>
-  <nav class="menu">
-    <ul></ul>
-  </nav>
-</header>
+  <header>
+    <nav class="menu">
+      <ul></ul>
+    </nav>
+  </header>
 
-<div class="container">
-  <main>
-    <h1>Solicitudes de Servicios</h1>
+  <div class="container">
+    <main>
+      <h1>Solicitudes de Servicios</h1>
 
-    <section class="pendientes">
-      <h2>Solicitudes Pendientes</h2>
-      <div id="pendientes-container" class="solicitudes-container"></div>
-    </section>
+      <section class="pendientes">
+        <h2>Solicitudes Pendientes</h2>
+        <div id="pendientes-container" class="solicitudes-container"></div>
+      </section>
 
-    <section class="rechazadas">
-      <h2>Solicitudes Rechazadas</h2>
-      <div id="rechazadas-container" class="solicitudes-container"></div>
-    </section>
-  </main>
-</div>
+      <section class="rechazadas">
+        <h2>Solicitudes Rechazadas</h2>
+        <div id="rechazadas-container" class="solicitudes-container"></div>
+      </section>
+    </main>
+  </div>
 
-<script>
-  const userType = localStorage.getItem('usuario');
-  const menu = document.querySelector('.menu ul');
+  <script>
+    const userType = localStorage.getItem('usuario');
+    const menu = document.querySelector('.menu ul');
 
-  if (menu) {
-    menu.innerHTML = '<li><img src="img/logo.png" alt="Logo" class="logo"></li>';
+    if (menu) {
+      menu.innerHTML = '<li><img src="img/logo.png" alt="Logo" class="logo"></li>';
 
-    if (userType === 'admin') {
-      menu.innerHTML += `
-        <li><a href="solicitudes.html" class="active">Solicitudes</a></li>
-        <li><a href="agenda.html">Agenda</a></li>
-        <li><a href="inventario.html">Inventario</a></li>
-        <li><a href="colaboradores.html">Colaboradores</a></li>
-        <li><a href="#" id="logout">Cerrar sesión</a></li>
-      `;
-    } else {
-      alert('Acceso no autorizado.');
-      window.location.href = 'index.html';
-    }
-  }
-
-  const logout = document.getElementById('logout');
-  if (logout) {
-    logout.addEventListener('click', function() {
-      localStorage.removeItem('usuario');
-      window.location.href = 'login.html';
-    });
-  }
-
-  // Simulación de solicitudes
-  const solicitudes = [
-    { id: 1, cliente: "Pedro Torres", descripcion: "Mudanza oficina", estado: "pendiente" },
-    { id: 2, cliente: "Laura Jiménez", descripcion: "Acarreo muebles", estado: "pendiente" }
-  ];
-
-  const pendientes = document.getElementById('pendientes-container');
-  const rechazadas = document.getElementById('rechazadas-container');
-
-  function cargarSolicitudes() {
-    pendientes.innerHTML = '';
-    rechazadas.innerHTML = '';
-
-    solicitudes.forEach(solicitud => {
-      const card = document.createElement('div');
-      card.className = 'solicitud-card';
-      card.innerHTML = `
-        <h3>${solicitud.cliente}</h3>
-        <p>${solicitud.descripcion}</p>
-      `;
-
-      if (solicitud.estado === 'pendiente') {
-        const aceptarBtn = document.createElement('button');
-        aceptarBtn.textContent = 'Aceptar';
-        aceptarBtn.className = 'aceptar';
-        aceptarBtn.onclick = () => aceptarSolicitud(solicitud.id);
-
-        const rechazarBtn = document.createElement('button');
-        rechazarBtn.textContent = 'Declinar';
-        rechazarBtn.className = 'rechazar';
-        rechazarBtn.onclick = () => rechazarSolicitud(solicitud.id);
-
-        card.appendChild(aceptarBtn);
-        card.appendChild(rechazarBtn);
-
-        pendientes.appendChild(card);
-      } else if (solicitud.estado === 'rechazada') {
-        const eliminarBtn = document.createElement('button');
-        eliminarBtn.textContent = 'Eliminar';
-        eliminarBtn.className = 'eliminar';
-        eliminarBtn.onclick = () => eliminarSolicitud(solicitud.id);
-
-        card.appendChild(eliminarBtn);
-
-        rechazadas.appendChild(card);
+      if (userType === 'admin') {
+        menu.innerHTML += `
+      <li><a href="solicitudes.html" class="active">Solicitudes</a></li>
+      <li><a href="agenda.html">Agenda</a></li>
+      <li><a href="inventario.html">Inventario</a></li>
+      <li><a href="colaboradores.html">Colaboradores</a></li>
+      <li><a href="#" id="logout">Cerrar sesión</a></li>
+    `;
+      } else {
+        alert('Acceso no autorizado.');
+        window.location.href = 'index.html';
       }
-    });
-  }
-
-  function aceptarSolicitud(id) {
-    const solicitud = solicitudes.find(s => s.id === id);
-    if (solicitud) {
-      solicitud.estado = 'aceptada';
-      alert('Solicitud aceptada y agregada a agenda.');
-      cargarSolicitudes();
     }
-  }
 
-  function rechazarSolicitud(id) {
-    const solicitud = solicitudes.find(s => s.id === id);
-    if (solicitud) {
-      solicitud.estado = 'rechazada';
-      cargarSolicitudes();
+    const logout = document.getElementById('logout');
+    if (logout) {
+      logout.addEventListener('click', function () {
+        localStorage.removeItem('usuario');
+        window.location.href = 'login.html';
+      });
     }
-  }
 
-  function eliminarSolicitud(id) {
-    const index = solicitudes.findIndex(s => s.id === id);
-    if (index !== -1) {
-      solicitudes.splice(index, 1);
-      cargarSolicitudes();
+    // Obtener solicitudes de localStorage
+    let solicitudes = JSON.parse(localStorage.getItem('solicitudes')) || [];
+
+    const pendientes = document.getElementById('pendientes-container');
+    const rechazadas = document.getElementById('rechazadas-container');
+
+    function cargarSolicitudes() {
+      pendientes.innerHTML = '';
+      rechazadas.innerHTML = '';
+
+      if (solicitudes.length === 0) {
+        pendientes.innerHTML = '<p class="sin-solicitudes">No hay solicitudes pendientes</p>';
+        rechazadas.innerHTML = '<p class="sin-solicitudes">No hay solicitudes rechazadas</p>';
+        return;
+      }
+
+      solicitudes.forEach(solicitud => {
+        const card = document.createElement('div');
+        card.className = 'solicitud-card';
+
+        // Formatear fecha para mostrarla mejor
+        const fechaFormateada = solicitud.fecha ? new Date(solicitud.fecha).toLocaleDateString('es-ES') : 'Sin fecha';
+
+        card.innerHTML = `
+      <h3>${solicitud.cliente}</h3>
+      <p><strong>Contacto:</strong> ${solicitud.contacto || 'No especificado'}</p>
+      <p><strong>Fecha:</strong> ${fechaFormateada}</p>
+      <p><strong>Servicio:</strong> ${solicitud.servicio}</p>
+      <p><strong>Descripción:</strong> ${solicitud.descripcion}</p>
+      <p><strong>Origen:</strong> ${solicitud.origen}</p>
+      <p><strong>Destino:</strong> ${solicitud.destino}</p>
+      <p><strong>Total cotizado:</strong> $${solicitud.total}</p>
+    `;
+
+        if (solicitud.estado === 'pendiente') {
+          const aceptarBtn = document.createElement('button');
+          aceptarBtn.textContent = 'Aceptar';
+          aceptarBtn.className = 'aceptar';
+          aceptarBtn.onclick = () => aceptarSolicitud(solicitud.id);
+
+          const rechazarBtn = document.createElement('button');
+          rechazarBtn.textContent = 'Rechazar';
+          rechazarBtn.className = 'rechazar';
+          rechazarBtn.onclick = () => rechazarSolicitud(solicitud.id);
+
+          card.appendChild(aceptarBtn);
+          card.appendChild(rechazarBtn);
+
+          pendientes.appendChild(card);
+        } else if (solicitud.estado === 'rechazada') {
+          const eliminarBtn = document.createElement('button');
+          eliminarBtn.textContent = 'Eliminar';
+          eliminarBtn.className = 'eliminar';
+          eliminarBtn.onclick = () => eliminarSolicitud(solicitud.id);
+
+          card.appendChild(eliminarBtn);
+          rechazadas.appendChild(card);
+        }
+      });
     }
-  }
 
-  cargarSolicitudes();
-</script>
+    function aceptarSolicitud(id) {
+      let solicitudes = JSON.parse(localStorage.getItem('solicitudes')) || [];
+      let historial = JSON.parse(localStorage.getItem('historial')) || [];
+
+      const solicitudIndex = solicitudes.findIndex(s => s.id === id);
+      if (solicitudIndex !== -1) {
+        solicitudes[solicitudIndex].estado = 'aceptada';
+        localStorage.setItem('solicitudes', JSON.stringify(solicitudes));
+
+        const historialIndex = historial.findIndex(h => h.id === id);
+        if (historialIndex !== -1) {
+          historial[historialIndex].estado = 'aceptada';
+          localStorage.setItem('historial', JSON.stringify(historial));
+        }
+
+        let agenda = JSON.parse(localStorage.getItem('agenda')) || [];
+        agenda.push({
+          ...solicitudes[solicitudIndex],
+          estado: 'agendado'
+        });
+        localStorage.setItem('agenda', JSON.stringify(agenda));
+
+        alert('Solicitud aceptada y agregada a la agenda');
+        cargarSolicitudes();
+      }
+    }
+
+    function rechazarSolicitud(id) {
+      let solicitudes = JSON.parse(localStorage.getItem('solicitudes')) || [];
+      let historial = JSON.parse(localStorage.getItem('historial')) || [];
+
+      const solicitudIndex = solicitudes.findIndex(s => s.id === id);
+      if (solicitudIndex !== -1) {
+        solicitudes[solicitudIndex].estado = 'rechazada';
+        localStorage.setItem('solicitudes', JSON.stringify(solicitudes));
+
+        const historialIndex = historial.findIndex(h => h.id === id);
+        if (historialIndex !== -1) {
+          historial[historialIndex].estado = 'rechazada';
+          localStorage.setItem('historial', JSON.stringify(historial));
+        }
+
+        cargarSolicitudes();
+      }
+    }
+
+    function eliminarSolicitud(id) {
+      const solicitudIndex = solicitudes.findIndex(s => s.id === id);
+      if (solicitudIndex !== -1) {
+        solicitudes.splice(solicitudIndex, 1);
+        localStorage.setItem('solicitudes', JSON.stringify(solicitudes));
+        cargarSolicitudes();
+      }
+    }
+
+    // Cargar solicitudes al iniciar
+    cargarSolicitudes();
+  </script>
 
 </body>
+
 </html>
