@@ -7,11 +7,11 @@ if (menu) {
 
   if (userType === 'admin') {
     menu.innerHTML += `
-      <li><a href="solicitudes.html">Solicitudes</a></li>
-      <li><a href="agenda.html">Agenda</a></li>
-      <li><a href="inventario.html" class="active">Inventario</a></li>
+      <li><a href="/src/solicitudes/solicitudes.html">Solicitudes</a></li>
+      <li><a href="/src/agenda/agenda.html">Agenda</a></li>
+      <li><a href="/src/inventario/inventario.html" class="active">Inventario</a></li>
       <li><a href="/src/colaboradores/colaboradores.html">Colaboradores</a></li>
-      <li><a href="#" id="logout">Cerrar sesión</a></li>
+      <li><a href="/src/login/login.html" id="logout">Cerrar sesión</a></li>
     `;
   } else {
     alert('Acceso no autorizado.');
@@ -23,7 +23,7 @@ const logout = document.getElementById('logout');
 if (logout) {
   logout.addEventListener('click', function() {
     localStorage.removeItem('usuario');
-    window.location.href = 'login.html';
+    window.location.href = '/src/login/login.html';
   });
 }
 

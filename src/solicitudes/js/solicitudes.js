@@ -15,7 +15,7 @@ if (menu) {
     `;
   } else {
     alert("Acceso no autorizado.");
-    window.location.href = "index.html";
+    window.location.href = "/src/index.html";
   }
 }
 
@@ -23,7 +23,7 @@ const logout = document.getElementById("logout");
 if (logout) {
   logout.addEventListener("click", function () {
     localStorage.removeItem("usuario");
-    window.location.href = "login.html";
+    window.location.href = "/src/login/login.html";
   });
 }
 

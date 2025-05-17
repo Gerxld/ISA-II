@@ -6,15 +6,15 @@ const userType = localStorage.getItem('usuario');
 
     if (userType === 'admin') {
       menu.innerHTML += `
-        <li><a href="solicitudes.html">Solicitudes</a></li>
-        <li><a href="agenda.html">Agenda</a></li>
-        <li><a href="inventario.html">Inventario</a></li>
-        <li><a href="colaboradores.html" class="active">Colaboradores</a></li>
-        <li><a href="#" id="logout">Cerrar sesión</a></li>
+        <li><a href="/src/solicitudes/solicitudes.html">Solicitudes</a></li>
+        <li><a href="/src/agenda/agenda.html">Agenda</a></li>
+        <li><a href="/src/inventario/inventario.html">Inventario</a></li>
+        <li><a href="/src/colaboradores/colaboradores.html" class="active">Colaboradores</a></li>
+        <li><a href="/src/login/login.html" id="logout">Cerrar sesión</a></li>
       `;
     } else {
       alert('Acceso no autorizado.');
-      window.location.href = 'index.html';
+      window.location.href = '/src/index.html';
     }
   }
 
@@ -22,7 +22,7 @@ const userType = localStorage.getItem('usuario');
   if (logout) {
     logout.addEventListener('click', function() {
       localStorage.removeItem('usuario');
-      window.location.href = 'login.html';
+      window.location.href = '/src/login/login.html';
     });
   }
 

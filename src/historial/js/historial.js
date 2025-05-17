@@ -1,7 +1,7 @@
 const userType = localStorage.getItem("usuario");
 if (!userType || userType === "admin") {
   alert("Acceso no autorizado.");
-  window.location.href = "index.html";
+  window.location.href = "/src/index.html";
 }
 const menu = document.querySelector(".menu ul");
 if (menu) {
@@ -9,10 +9,10 @@ if (menu) {
 
   if (userType === "cliente") {
     menu.innerHTML += `
-      <li><a href="index.html">Inicio</a></li>
-      <li><a href="historial.html" class="active">Mi Historial</a></li>
-      <li><a href="cotizar.html">Nueva Cotización</a></li>
-      <li><a href="#" id="logout">Cerrar sesión</a></li>
+      <li><a href="/src/index.html">Inicio</a></li>
+      <li><a href="/src/historial/historial.html" class="active">Mi Historial</a></li>
+      <li><a href="/src/cotizar/cotizar.html">Nueva Cotización</a></li>
+      <li><a href="/src/login/login.html" id="logout">Cerrar sesión</a></li>
     `;
   }
 }
@@ -21,7 +21,7 @@ const logout = document.getElementById("logout");
 if (logout) {
   logout.addEventListener("click", function () {
     localStorage.removeItem("usuario");
-    window.location.href = "login.html";
+    window.location.href = "/src/login/login.html";
   });
 }
 

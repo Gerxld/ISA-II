@@ -23,5 +23,5 @@ document
 
     alert("¡Usuario registrado con éxito!");
     localStorage.setItem("usuario", "cliente");
-    window.location.href = "cotizar.html";
+    window.location.href = "/src/cotizar/cotizar.html";
   });

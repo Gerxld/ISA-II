@@ -296,25 +296,25 @@
     // Menu dinámico
     const menu = document.getElementById('menu-lista');
     if (menu) {
-      menu.innerHTML = '<li><img src="img/logo.png" alt="Logo" class="logo"></li>';
+      menu.innerHTML = '<li><img src="/public/img/logo.png" alt="Logo" class="logo"></li>';
       if (userType === 'admin') {
         menu.innerHTML += `
-      <li><a href="solicitudes.html">Solicitudes</a></li>
-      <li><a href="agenda.html">Agenda</a></li>
-      <li><a href="inventario.html">Inventario</a></li>
-      <li><a href="colaboradores.html">Colaboradores</a></li>
-      <li><a href="#" id="logout">Cerrar sesión</a></li>
+      <li><a href="/src/solicutudes/solicitudes.html">Solicitudes</a></li>
+      <li><a href="/src/agenda/agenda.html">Agenda</a></li>
+      <li><a href="/src/inventario/inventario.html">Inventario</a></li>
+      <li><a href="/src/colaboradores/colaboradores.html">Colaboradores</a></li>
+      <li><a href="/src/login/login.html" id="logout">Cerrar sesión</a></li>
     `;
       } else if (userType === 'cliente') {
         menu.innerHTML += `
-      <li><a href="cotizar.html" class="active">Cotizar</a></li>
-      <li><a href="historial.html">Mi Historial</a></li>
-      <li><a href="#" id="logout">Cerrar sesión</a></li>
+      <li><a href="/src/cotizar/cotizar.html" class="active">Cotizar</a></li>
+      <li><a href="/src/historial/historial.html">Mi Historial</a></li>
+      <li><a href="/src/login/login.html" id="logout">Cerrar sesión</a></li>
     `;
       } else {
         menu.innerHTML += `
-      <li><a href="index.html">Inicio</a></li>
-      <li><a href="login.html">Iniciar sesión</a></li>
+      <li><a href="/src/index.html">Inicio</a></li>
+      <li><a href="/src/login/login.html">Iniciar sesión</a></li>
     `;
       }
     }
