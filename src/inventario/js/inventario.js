@@ -1,69 +1,16 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Inventario</title>
-  <link rel="stylesheet" href="estilos/inventario.css">
-</head>
-<body>
-
-<header>
-  <nav class="menu">
-    <ul></ul>
-  </nav>
-</header>
-
-<div class="container">
-  <main>
-    <h1>Inventario de Herramientas</h1>
-
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Herramienta</th>
-            <th>Cantidad</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="inventario-body">
-          <!-- Inventario -->
-        </tbody>
-      </table>
-    </div>
-    <button class="add-button" onclick="abrirModalAgregar()">Añadir Nueva Herramienta</button>
-  </main>
-</div>
-
-<!-- Modal de Edición/Agregar -->
-<div id="modal" class="modal">
-  <h2 id="modal-titulo">Editar Herramienta</h2>
-  <input type="text" id="nombre-herramienta" placeholder="Nombre de la herramienta">
-  <input type="number" id="cantidad-herramienta" placeholder="Cantidad">
-  <div style="margin-top:10px;">
-    <button class="confirm-button" onclick="guardarHerramienta()">Guardar</button>
-    <button class="cancel-button" onclick="cerrarModal()">Cancelar</button>
-  </div>
-</div>
-
-<!-- Fondo oscuro modal -->
-<div id="modal-overlay" class="modal-overlay" onclick="cerrarModal()"></div>
-
-<script>
 // Menú dinámico
 const userType = localStorage.getItem('usuario');
 const menu = document.querySelector('.menu ul');
 
 if (menu) {
-  menu.innerHTML = '<li><img src="img/logo.png" alt="Logo" class="logo"></li>';
+  menu.innerHTML = '<li><img src="/public/img/logo.png" alt="Logo" class="logo"></li>';
 
   if (userType === 'admin') {
     menu.innerHTML += `
       <li><a href="solicitudes.html">Solicitudes</a></li>
       <li><a href="agenda.html">Agenda</a></li>
       <li><a href="inventario.html" class="active">Inventario</a></li>
-      <li><a href="colaboradores.html">Colaboradores</a></li>
+      <li><a href="/src/colaboradores/colaboradores.html">Colaboradores</a></li>
       <li><a href="#" id="logout">Cerrar sesión</a></li>
     `;
   } else {
@@ -165,7 +112,3 @@ function cerrarModal() {
 }
 
 cargarInventario();
-</script>
-
-</body>
-</html>

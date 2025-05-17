@@ -1,58 +1,15 @@
-<!DOCTYPE html>
- <html lang="es">
- 
- <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Agenda</title>
-   <link rel="stylesheet" href="estilos/agenda.css">
- </head>
- 
- <body>
-  <header>
-    <nav class="menu">
-      <ul></ul>
-    </nav>
-  </header>
-
-  <div class="container">
-    <main>
-      <h1>Agenda de Servicios</h1>
-
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Fecha</th>
-              <th>Cliente</th>
-              <th>Contacto</th>
-              <th>Servicio</th>
-              <th>Descripción</th>
-              <th>Ubicación Origen</th>
-              <th>Ubicación Destino</th>
-            </tr>
-          </thead>
-          <tbody id="agenda-body">
-            <!-- Servicios agendados aquí -->
-          </tbody>
-        </table>
-      </div>
-    </main>
-  </div>
-
-  <script>
-    const userType = localStorage.getItem('usuario');
+const userType = localStorage.getItem('usuario');
     const menu = document.querySelector('.menu ul');
 
     if (menu) {
-      menu.innerHTML = '<li><img src="img/logo.png" alt="Logo" class="logo"></li>';
+      menu.innerHTML = '<li><img src="/public/img/logo.png" alt="Logo" class="logo"></li>';
 
       if (userType === 'admin') {
         menu.innerHTML += `
       <li><a href="solicitudes.html">Solicitudes</a></li>
       <li><a href="agenda.html" class="active">Agenda</a></li>
-      <li><a href="inventario.html">Inventario</a></li>
-      <li><a href="colaboradores.html">Colaboradores</a></li>
+      <li><a href="/src/inventario/inventario.html">Inventario</a></li>
+      <li><a href="/src/colaboradores/colaboradores.html">Colaboradores</a></li>
       <li><a href="#" id="logout">Cerrar sesión</a></li>
     `;
       } else {
@@ -101,7 +58,3 @@
        });
      }
      cargarAgenda();
-   </script>
- 
- </body>
- </html>
