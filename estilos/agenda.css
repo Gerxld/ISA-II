@@ -93,18 +93,11 @@ h1 {
     width: 100%;
     overflow-x: auto;
     margin-bottom: 20px;
-}
-  
-.table-container {
-    width: 100%;
-    overflow-x: auto;
-    margin-bottom: 20px;
     -webkit-overflow-scrolling: touch;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border: 1px solid #ddd;
     border-radius: 8px;
 }
-
 
 table {
     width: 100%;
@@ -112,7 +105,8 @@ table {
     border-collapse: collapse;
 }
 
-table th, table td {
+table th,
+table td {
     border: 1px solid #ccc;
     padding: 10px;
     text-align: left;
@@ -122,7 +116,10 @@ table th {
     background-color: #585197;
     color: #ffffff;
 }
-.add-button, .delete-button {
+
+.add-button,
+.delete-button,
+.edit-button {
     display: block;
     width: 100%;
     max-width: 200px;
@@ -137,30 +134,36 @@ table th {
     cursor: pointer;
 }
 
-.add-button:hover, .delete-button:hover {
+.add-button:hover,
+.delete-button:hover,
+.edit-button:hover {
     background-color: #FFC300;
 }
 
 .delete-button {
     background-color: #e41a1a;
 }
-button.confirm-delete-button{
+
+button.confirm-delete-button {
     background-color: #4CAF50;
     color: #ffffff;
 }
+
 .button-group {
     display: flex;
     justify-content: center;
     gap: 20px;
     flex-wrap: wrap;
     margin-top: 20px;
-  }
-  
-  .button-group .add-button,
-  .button-group .delete-button {
-    margin: 0; /* Anula el margin auto que tenías */
+}
+
+.button-group .add-button,
+.button-group .delete-button,
+.button-group .edit-button {
+    margin: 0;
     width: 150px;
-  }
+}
+
 .modal {
     display: none;
     position: fixed;
@@ -173,7 +176,7 @@ button.confirm-delete-button{
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     z-index: 1000;
     width: 90%;
-    max-width: 300px;
+    max-width: 400px;
 }
 
 .modal-overlay {
@@ -192,7 +195,9 @@ button.confirm-delete-button{
     margin-bottom: 10px;
 }
 
-.modal input, .modal select {
+.modal input,
+.modal select,
+.modal textarea {
     width: calc(100% - 16px);
     margin: 5px 0;
     padding: 8px;
@@ -214,15 +219,16 @@ button.confirm-delete-button{
 .modal .confirm-button {
     background-color: #4CAF50;
     color: white;
-  }
-  
+}
+
 .modal .cancel-button {
     background-color: #f44336;
     color: white;
-  }
+}
+
 .modal.active,
 .modal-overlay.active {
-  display: block;
+    display: block;
 }
 
 /* Estilos responsive */
@@ -232,7 +238,9 @@ button.confirm-delete-button{
         align-items: center;
     }
 
-    table, th, td {
+    table,
+    th,
+    td {
         font-size: 0.9rem;
     }
 
@@ -251,11 +259,14 @@ button.confirm-delete-button{
         padding: 10px;
     }
 
-    table th, table td {
+    table th,
+    table td {
         padding: 8px;
     }
 
-    .add-button, .delete-button {
+    .add-button,
+    .delete-button,
+    .edit-button {
         max-width: 100%;
     }
 

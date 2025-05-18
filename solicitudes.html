@@ -2,14 +2,13 @@
 <html lang="es">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Solicitudes</title>
-  <link rel="stylesheet" href="estilos/solicitudes.css">
+  <link rel="stylesheet" href="estilos/solicitudes.css" />
 </head>
 
 <body>
-
   <header>
     <nav class="menu">
       <ul></ul>
@@ -32,6 +31,15 @@
     </main>
   </div>
 
+  <!-- Modal para mostrar mensajes de éxito -->
+  <div id="modal-exito" class="modal"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5);">
+    <div style="background:white; margin:15% auto; padding:20px; width:300px; text-align:center; border-radius:10px;">
+      <p>¡Solicitud aceptada y agendada!</p>
+      <button onclick="cerrarModal()">Cerrar</button>
+    </div>
+  </div>
+
   <script>
     const userType = localStorage.getItem('usuario');
     const menu = document.querySelector('.menu ul');
@@ -41,12 +49,12 @@
 
       if (userType === 'admin') {
         menu.innerHTML += `
-      <li><a href="solicitudes.html" class="active">Solicitudes</a></li>
-      <li><a href="agenda.html">Agenda</a></li>
-      <li><a href="inventario.html">Inventario</a></li>
-      <li><a href="colaboradores.html">Colaboradores</a></li>
-      <li><a href="#" id="logout">Cerrar sesión</a></li>
-    `;
+          <li><a href="solicitudes.html" class="active">Solicitudes</a></li>
+          <li><a href="agenda.html">Agenda</a></li>
+          <li><a href="inventario.html">Inventario</a></li>
+          <li><a href="colaboradores.html">Colaboradores</a></li>
+          <li><a href="#" id="logout">Cerrar sesión</a></li>
+        `;
       } else {
         alert('Acceso no autorizado.');
         window.location.href = 'index.html';
@@ -61,7 +69,6 @@
       });
     }
 
-    // Obtener solicitudes de localStorage
     let solicitudes = JSON.parse(localStorage.getItem('solicitudes')) || [];
 
     const pendientes = document.getElementById('pendientes-container');
@@ -81,30 +88,29 @@
         const card = document.createElement('div');
         card.className = 'solicitud-card';
 
-        // Formatear fecha para mostrarla mejor
         const fechaFormateada = solicitud.fecha ? new Date(solicitud.fecha).toLocaleDateString('es-ES') : 'Sin fecha';
 
         card.innerHTML = `
-      <h3>${solicitud.cliente}</h3>
-      <p><strong>Contacto:</strong> ${solicitud.contacto || 'No especificado'}</p>
-      <p><strong>Fecha:</strong> ${fechaFormateada}</p>
-      <p><strong>Servicio:</strong> ${solicitud.servicio}</p>
-      <p><strong>Descripción:</strong> ${solicitud.descripcion}</p>
-      <p><strong>Origen:</strong> ${solicitud.origen}</p>
-      <p><strong>Destino:</strong> ${solicitud.destino}</p>
-      <p><strong>Total cotizado:</strong> $${solicitud.total}</p>
-    `;
+          <h3>${solicitud.cliente}</h3>
+          <p><strong>Contacto:</strong> ${solicitud.contacto || 'No especificado'}</p>
+          <p><strong>Fecha:</strong> ${fechaFormateada}</p>
+          <p><strong>Servicio:</strong> ${solicitud.servicio}</p>
+          <p><strong>Descripción:</strong> ${solicitud.descripcion}</p>
+          <p><strong>Origen:</strong> ${solicitud.origen}</p>
+          <p><strong>Destino:</strong> ${solicitud.destino}</p>
+          <p><strong>Total cotizado:</strong> $${solicitud.total}</p>
+        `;
 
         if (solicitud.estado === 'pendiente') {
           const aceptarBtn = document.createElement('button');
           aceptarBtn.textContent = 'Aceptar';
           aceptarBtn.className = 'aceptar';
-          aceptarBtn.onclick = () => aceptarSolicitud(solicitud.id);
+          aceptarBtn.onclick = () => solicitarPin(() => aceptarSolicitud(solicitud.id));
 
           const rechazarBtn = document.createElement('button');
           rechazarBtn.textContent = 'Rechazar';
           rechazarBtn.className = 'rechazar';
-          rechazarBtn.onclick = () => rechazarSolicitud(solicitud.id);
+          rechazarBtn.onclick = () => solicitarPin(() => rechazarSolicitud(solicitud.id));
 
           card.appendChild(aceptarBtn);
           card.appendChild(rechazarBtn);
@@ -122,6 +128,27 @@
       });
     }
 
+    function solicitarPin(callback) {
+      const pin = prompt('Ingrese su PIN de seguridad:');
+      const pinGuardado = localStorage.getItem('pin') || '1234';
+      if (pin === pinGuardado) {
+        callback();
+      } else {
+        alert('PIN incorrecto.');
+      }
+    }
+
+    function mostrarModal() {
+      const modal = document.getElementById('modal-exito');
+      modal.style.display = 'block';
+    }
+
+    function cerrarModal() {
+      const modal = document.getElementById('modal-exito');
+      modal.style.display = 'none';
+      location.reload(); // Refresca la página después de cerrar el modal
+    }
+
     function aceptarSolicitud(id) {
       let solicitudes = JSON.parse(localStorage.getItem('solicitudes')) || [];
       let historial = JSON.parse(localStorage.getItem('historial')) || [];
@@ -132,22 +159,26 @@
         localStorage.setItem('solicitudes', JSON.stringify(solicitudes));
 
         const historialIndex = historial.findIndex(h => h.id === id);
+        let fechaOriginal = new Date().toISOString(); // fallback por si no hay historial
+
         if (historialIndex !== -1) {
           historial[historialIndex].estado = 'aceptada';
+          fechaOriginal = historial[historialIndex].fecha || fechaOriginal;
           localStorage.setItem('historial', JSON.stringify(historial));
         }
 
         let agenda = JSON.parse(localStorage.getItem('agenda')) || [];
         agenda.push({
           ...solicitudes[solicitudIndex],
-          estado: 'agendado'
+          estado: 'agendado',
+          fecha: fechaOriginal // se asegura de guardar la fecha original
         });
         localStorage.setItem('agenda', JSON.stringify(agenda));
 
-        alert('Solicitud aceptada y agregada a la agenda');
-        cargarSolicitudes();
+        mostrarModal();
       }
     }
+
 
     function rechazarSolicitud(id) {
       let solicitudes = JSON.parse(localStorage.getItem('solicitudes')) || [];
@@ -164,23 +195,21 @@
           localStorage.setItem('historial', JSON.stringify(historial));
         }
 
-        cargarSolicitudes();
+        location.reload(); // Refrescar la página al rechazar
       }
     }
 
     function eliminarSolicitud(id) {
-      const solicitudIndex = solicitudes.findIndex(s => s.id === id);
-      if (solicitudIndex !== -1) {
-        solicitudes.splice(solicitudIndex, 1);
+      const index = solicitudes.findIndex(s => s.id === id);
+      if (index !== -1) {
+        solicitudes.splice(index, 1);
         localStorage.setItem('solicitudes', JSON.stringify(solicitudes));
         cargarSolicitudes();
       }
     }
 
-    // Cargar solicitudes al iniciar
     cargarSolicitudes();
   </script>
-
 </body>
 
 </html>

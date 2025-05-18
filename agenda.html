@@ -1,14 +1,14 @@
 <!DOCTYPE html>
- <html lang="es">
- 
- <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Agenda</title>
-   <link rel="stylesheet" href="estilos/agenda.css">
- </head>
- 
- <body>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agenda</title>
+  <link rel="stylesheet" href="estilos/agenda.css">
+</head>
+
+<body>
   <header>
     <nav class="menu">
       <ul></ul>
@@ -27,9 +27,13 @@
               <th>Cliente</th>
               <th>Contacto</th>
               <th>Servicio</th>
-              <th>Descripción</th>
+              <th>Descripción (Admin)</th>
               <th>Ubicación Origen</th>
               <th>Ubicación Destino</th>
+              <th>Fecha Solicitud</th>
+              <th>Trabajador</th>
+              <th>Equipo</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody id="agenda-body">
@@ -38,6 +42,20 @@
         </table>
       </div>
     </main>
+  </div>
+
+  <!-- Modal de edición -->
+  <div class="modal-overlay" id="modal-overlay"></div>
+  <div class="modal" id="edit-modal">
+    <div class="modal-header">Editar Servicio</div>
+    <input type="text" id="input-trabajador" placeholder="Nombre del trabajador">
+    <input type="text" id="input-equipo" placeholder="Equipo asignado">
+    <input type="text" id="input-descripcion-admin" placeholder="Descripción desde admin">
+    <input type="password" id="input-pin" placeholder="PIN de seguridad">
+    <div class="button-group">
+      <button class="confirm-button" id="save-edit">Guardar</button>
+      <button class="cancel-button" id="cancel-edit">Cancelar</button>
+    </div>
   </div>
 
   <script>
@@ -49,12 +67,13 @@
 
       if (userType === 'admin') {
         menu.innerHTML += `
-      <li><a href="solicitudes.html">Solicitudes</a></li>
-      <li><a href="agenda.html" class="active">Agenda</a></li>
-      <li><a href="inventario.html">Inventario</a></li>
-      <li><a href="colaboradores.html">Colaboradores</a></li>
-      <li><a href="#" id="logout">Cerrar sesión</a></li>
-    `;
+          <li><a href="solicitudes.html">Solicitudes</a></li>
+          <li><a href="agenda.html" class="active">Agenda</a></li>
+          <li><a href="inventario.html">Inventario</a></li>
+          <li><a href="colaboradores.html">Colaboradores</a></li>
+          <li><a href="historial.html">Historial</a></li>
+          <li><a href="#" id="logout">Cerrar sesión</a></li>
+        `;
       } else {
         alert('Acceso no autorizado.');
         window.location.href = 'index.html';
@@ -68,40 +87,106 @@
         window.location.href = 'login.html';
       });
     }
+
     const tbody = document.getElementById('agenda-body');
- 
-     function cargarAgenda() {
-       const agenda = JSON.parse(localStorage.getItem('agenda')) || [];
- 
-       tbody.innerHTML = '';
- 
-       if (agenda.length === 0) {
-         const row = document.createElement('tr');
-         row.innerHTML = '<td colspan="7" style="text-align: center;">No hay servicios agendados</td>';
-         tbody.appendChild(row);
-         return;
-       }
- 
-       agenda.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
- 
-       agenda.forEach(item => {
-         const row = document.createElement('tr');
-         const fechaFormateada = item.fecha ? new Date(item.fecha).toLocaleDateString('es-ES') : 'Sin fecha';
- 
-         row.innerHTML = `
-       <td>${fechaFormateada}</td>
-       <td>${item.cliente || 'Sin nombre'}</td>
-       <td>${item.contacto || 'Sin contacto'}</td>
-       <td>${item.servicio || 'Sin servicio'}</td>
-       <td>${item.descripcion || 'Sin descripción'}</td>
-       <td>${item.origen || 'Sin origen'}</td>
-       <td>${item.destino || 'Sin destino'}</td>
-     `;
-         tbody.appendChild(row);
-       });
-     }
-     cargarAgenda();
-   </script>
- 
- </body>
- </html>
+    const modal = document.getElementById('edit-modal');
+    const overlay = document.getElementById('modal-overlay');
+    const inputTrabajador = document.getElementById('input-trabajador');
+    const inputEquipo = document.getElementById('input-equipo');
+    const inputDescripcionAdmin = document.getElementById('input-descripcion-admin');
+    const inputPin = document.getElementById('input-pin');
+    const saveEditBtn = document.getElementById('save-edit');
+    const cancelEditBtn = document.getElementById('cancel-edit');
+
+    let agenda = JSON.parse(localStorage.getItem('agenda')) || [];
+    let editIndex = null;
+
+    function abrirModal(index) {
+      editIndex = index;
+      const item = agenda[index];
+      inputTrabajador.value = item.trabajador || '';
+      inputEquipo.value = item.equipo || '';
+      inputDescripcionAdmin.value = item.descripcionAdmin || '';
+      inputPin.value = '';
+      modal.classList.add('active');
+      overlay.classList.add('active');
+    }
+
+    function cerrarModal() {
+      modal.classList.remove('active');
+      overlay.classList.remove('active');
+    }
+
+    cancelEditBtn.addEventListener('click', cerrarModal);
+
+    saveEditBtn.addEventListener('click', () => {
+      const pin = inputPin.value;
+      if (pin !== '1234') {
+        alert('PIN incorrecto');
+        return;
+      }
+
+      agenda[editIndex].trabajador = inputTrabajador.value;
+      agenda[editIndex].equipo = inputEquipo.value;
+      agenda[editIndex].descripcionAdmin = inputDescripcionAdmin.value;
+      localStorage.setItem('agenda', JSON.stringify(agenda));
+      cargarAgenda();
+      cerrarModal();
+    });
+
+    function eliminar(index) {
+      const pin = prompt("Ingrese el PIN de seguridad:");
+      if (pin !== '1234') {
+        alert('PIN incorrecto');
+        return;
+      }
+      agenda.splice(index, 1);
+      localStorage.setItem('agenda', JSON.stringify(agenda));
+      cargarAgenda();
+    }
+
+    function cargarAgenda() {
+      agenda = JSON.parse(localStorage.getItem('agenda')) || [];
+      tbody.innerHTML = '';
+
+      if (agenda.length === 0) {
+        const row = document.createElement('tr');
+        row.innerHTML = '<td colspan="11" style="text-align: center;">No hay servicios agendados</td>';
+        tbody.appendChild(row);
+        return;
+      }
+
+      agenda.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+
+      agenda.forEach((item, index) => {
+        const row = document.createElement('tr');
+        const fechaFormateada = item.fecha ? new Date(item.fecha).toLocaleDateString('es-ES') : 'Sin fecha';
+        const fechaSolicitud = item.fecha ? new Date(item.fecha).toLocaleDateString('es-ES') : 'Desconocida';
+
+        row.innerHTML = `
+          <td>${fechaFormateada}</td>
+          <td>${item.cliente || 'Sin nombre'}</td>
+          <td>${item.contacto || 'Sin contacto'}</td>
+          <td>${item.servicio || 'Sin servicio'}</td>
+          <td>${item.descripcionAdmin || 'Sin descripción'}</td>
+          <td>${item.origen || 'Sin origen'}</td>
+          <td>${item.destino || 'Sin destino'}</td>
+          <td>${fechaSolicitud}</td>
+          <td>${item.trabajador || 'No asignado'}</td>
+          <td>${item.equipo || 'No asignado'}</td>
+          <td>
+            <div class="button-group">
+              <button class="edit-button" onclick="abrirModal(${index})">Editar</button>
+              <button class="delete-button" onclick="eliminar(${index})">Eliminar</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    cargarAgenda();
+  </script>
+</body>
+
+</html>

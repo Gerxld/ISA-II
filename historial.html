@@ -50,7 +50,6 @@
     <script>
         const userType = localStorage.getItem('usuario');
         if (!userType || userType === 'admin') {
-            alert('Acceso no autorizado.');
             window.location.href = 'index.html';
         }
         const menu = document.querySelector('.menu ul');
@@ -59,9 +58,8 @@
 
             if (userType === 'cliente') {
                 menu.innerHTML += `
-      <li><a href="index.html">Inicio</a></li>
+      <li><a href="cotizar.html">Cotizar</a></li>          
       <li><a href="historial.html" class="active">Mi Historial</a></li>
-      <li><a href="cotizar.html">Nueva Cotización</a></li>
       <li><a href="#" id="logout">Cerrar sesión</a></li>
     `;
             }

@@ -35,13 +35,11 @@
             if (email === 'juanito.golondrina@gmail.com' && password === '12345') {
                 localStorage.setItem('usuario', 'cliente');
                 localStorage.setItem('usuarioActual', email);
-                alert('¡Bienvenid@ de vuelta!');
                 window.location.href = 'cotizar.html';
                 return;
             }
             if (email === 'admin.jefe@gmail.com' && password === '6789') {
                 localStorage.setItem('usuario', 'admin');
-                alert('¡Bienvenid@ de vuelta!');
                 window.location.href = 'solicitudes.html';
                 return;
             }
@@ -54,7 +52,6 @@
             if (usuarioEncontrado) {
                 localStorage.setItem('usuario', 'cliente');
                 localStorage.setItem('usuarioActual', email);
-                alert('¡Bienvenid@ ' + usuarioEncontrado.nombre + '!');
                 window.location.href = 'cotizar.html';
             } else {
                 alert('Credenciales incorrectas.');

@@ -150,16 +150,13 @@
     </div>
   </div>
 
-  <!-- SCRIPT -->
   <script>
-    // PROTECCIÓN: Si es admin, no puede entrar
     const userType = localStorage.getItem('usuario');
     if (userType === 'admin') {
       alert('No tienes permiso para ver esta página.');
       window.location.href = 'index.html';
     }
 
-    // Acordeón
     const acc = document.getElementsByClassName("accordion");
     for (let i = 0; i < acc.length; i++) {
       acc[i].addEventListener("click", function () {
@@ -173,7 +170,6 @@
       });
     }
 
-    // Colaboradores
     const colaboradoresPorTrabajo = {
       "Acarreo": [
         { nombre: "Juan Pérez - Conductor", pago: 10 },
@@ -208,7 +204,6 @@
     document.getElementById("tiposTrabajos").addEventListener("change", mostrarColaboradores);
     mostrarColaboradores();
 
-    // Precios de servicios
     const servicioValores = {
       "montaCarga": 100,
       "material": 30,
@@ -230,8 +225,6 @@
       "Mudanza Internas": 500
     };
 
-
-    // Datos de Provincias, Ciudades y Barrios
     const ubicaciones = {
       "Panamá": {
         "Ciudad de Panamá": ["Bethania", "San Francisco", "Juan Díaz"],
@@ -275,9 +268,6 @@
       }
     };
 
-    // ---------------------------
-    // Para Dirección de Partida
-    // ---------------------------
     const provinciaPartida = document.getElementById("provincia-partida");
     const distritoPartida = document.getElementById("distrito-partida");
     const corregimientoPartida = document.getElementById("corregimiento-partida");
@@ -316,9 +306,6 @@
 
     cargarProvinciasPartida();
 
-    // ---------------------------
-    // Para Dirección de Llegada
-    // ---------------------------
     const provinciaLlegada = document.getElementById("provincia-llegada");
     const distritoLlegada = document.getElementById("distrito-llegada");
     const corregimientoLlegada = document.getElementById("corregimiento-llegada");
@@ -363,7 +350,6 @@
       const fechaServicio = document.getElementById("fechaServicio").value;
       const tipoTrabajo = document.getElementById("tiposTrabajos").value;
 
-      // Capturar direcciones correctamente
       const direccionPartida = `${document.getElementById("provincia-partida").value}, ${document.getElementById("distrito-partida").value}, ${document.getElementById("corregimiento-partida").value}, ${document.getElementById("direccionPartida").value}`;
       const direccionLlegada = `${document.getElementById("provincia-llegada").value}, ${document.getElementById("distrito-llegada").value}, ${document.getElementById("corregimiento-llegada").value}, ${document.getElementById("direccionLlegada").value}`;
 
@@ -447,7 +433,6 @@
       document.getElementById("modal").style.display = "none";
     }
 
-    // Menu dinámico
     const menu = document.getElementById('menu-lista');
     if (menu) {
       menu.innerHTML = '<li><img src="img/logo.png" alt="Logo" class="logo"></li>';
