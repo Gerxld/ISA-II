@@ -23,7 +23,9 @@
         <thead>
           <tr>
             <th>Herramienta</th>
-            <th>Cantidad</th>
+            <th>Estado</th>
+            <th>Total</th>
+            <th>Disponibles</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -38,7 +40,14 @@
 <div id="modal" class="modal">
   <h2 id="modal-titulo">Editar Herramienta</h2>
   <input type="text" id="nombre-herramienta" placeholder="Nombre de la herramienta">
-  <input type="number" id="cantidad-herramienta" placeholder="Cantidad">
+  <input type="number" id="cantidad-herramienta" placeholder="Cantidad total">
+  <input type="number" id="disponibles-herramienta" placeholder="Cantidad disponible">
+  <select id="estado-herramienta">
+    <option value="Disponible">Disponible</option>
+    <option value="En uso">En uso</option>
+    <option value="En Mantenimiento">En Mantenimiento</option>
+    <option value="Fuera de servicio">Fuera de servicio</option>
+  </select>
   <div style="margin-top:10px;">
     <button class="confirm-button" onclick="guardarHerramienta()">Guardar</button>
     <button class="cancel-button" onclick="cerrarModal()">Cancelar</button>
@@ -50,6 +59,8 @@
 <script>
 const userType = localStorage.getItem('usuario');
 const menu = document.querySelector('.menu ul');
+const PIN_SEGURIDAD = "1234"; // Puedes cambiarlo a lo que desees
+
 
 if (menu) {
   menu.innerHTML = '<li><img src="img/logo.png" alt="Logo" class="logo"></li>';
@@ -77,10 +88,10 @@ if (logout) {
 }
 
 let inventario = [
-  { herramienta: "Camión de carga", cantidad: 3 },
-  { herramienta: "Grúa hidráulica", cantidad: 2 },
-  { herramienta: "Carretillas", cantidad: 10 },
-  { herramienta: "Transpaletas", cantidad: 5 }
+  { herramienta: "Camión de carga", cantidad: 3, estado: "En Mantenimiento", disponibles: 2},
+  { herramienta: "Grúa hidráulica", cantidad: 2, estado: "En uso", disponibles: 1 },
+  { herramienta: "Carretillas", cantidad: 10, estado: "Fuera de servicio", disponibles: 0 },
+  { herramienta: "Transpaletas", cantidad: 5, estado: "Disponibles", disponibles: 5 },
 ];
 
 const tbody = document.getElementById('inventario-body');
@@ -92,7 +103,9 @@ function cargarInventario() {
     const row = document.createElement('tr');
     row.innerHTML = `
       <td>${item.herramienta}</td>
+      <td>${item.estado}</td>
       <td>${item.cantidad}</td>
+      <td>${item.disponibles}</td>
       <td>
         <button class="edit-button" onclick="editarHerramienta(${index})">Editar</button>
         <button class="delete-button" onclick="eliminarHerramienta(${index})">Eliminar</button>
@@ -107,39 +120,66 @@ function abrirModalAgregar() {
   document.getElementById('modal-titulo').textContent = 'Añadir Nueva Herramienta';
   document.getElementById('nombre-herramienta').value = '';
   document.getElementById('cantidad-herramienta').value = '';
+  document.getElementById('disponibles-herramienta').value = '';
+  document.getElementById('estado-herramienta').value = 'Disponible';
   document.getElementById('modal').style.display = 'block';
   document.getElementById('modal-overlay').style.display = 'block';
 }
+
 
 function editarHerramienta(index) {
   editIndex = index;
+  const herramienta = inventario[index];
   document.getElementById('modal-titulo').textContent = 'Editar Herramienta';
-  document.getElementById('nombre-herramienta').value = inventario[index].herramienta;
-  document.getElementById('cantidad-herramienta').value = inventario[index].cantidad;
+  document.getElementById('nombre-herramienta').value = herramienta.herramienta;
+  document.getElementById('cantidad-herramienta').value = herramienta.cantidad;
+  document.getElementById('disponibles-herramienta').value = herramienta.disponibles;
+  document.getElementById('estado-herramienta').value = herramienta.estado;
   document.getElementById('modal').style.display = 'block';
   document.getElementById('modal-overlay').style.display = 'block';
 }
 
-function guardarHerramienta() {
-  const nombre = document.getElementById('nombre-herramienta').value.trim();
-  const cantidad = parseInt(document.getElementById('cantidad-herramienta').value);
 
-  if (!nombre || isNaN(cantidad) || cantidad < 0) {
-    alert('Ingrese un nombre válido y una cantidad válida.');
+function guardarHerramienta() {
+  const pinIngresado = prompt("Ingresa el PIN de seguridad:");
+  if (pinIngresado !== PIN_SEGURIDAD) {
+    alert("PIN incorrecto. No se realizó ningún cambio.");
+    cerrarModal();
     return;
   }
 
+  const nombre = document.getElementById('nombre-herramienta').value.trim();
+  const cantidad = parseInt(document.getElementById('cantidad-herramienta').value);
+  const disponibles = parseInt(document.getElementById('disponibles-herramienta').value);
+  const estado = document.getElementById('estado-herramienta').value;
+
+  if (!nombre || isNaN(cantidad) || cantidad < 0 || isNaN(disponibles) || disponibles < 0 || disponibles > cantidad) {
+    alert('Ingrese datos válidos. La cantidad disponible no puede ser mayor al total.');
+    return;
+  }
+
+  const nuevaHerramienta = { herramienta: nombre, cantidad, disponibles, estado };
+
   if (editIndex !== null) {
-    inventario[editIndex] = { herramienta: nombre, cantidad: cantidad };
+    inventario[editIndex] = nuevaHerramienta;
   } else {
-    inventario.push({ herramienta: nombre, cantidad: cantidad });
+    inventario.push(nuevaHerramienta);
   }
 
   cerrarModal();
   cargarInventario();
 }
 
+
+
 function eliminarHerramienta(index) {
+  const pinIngresado = prompt("Ingresa el PIN de seguridad:");
+  if (pinIngresado !== PIN_SEGURIDAD) {
+    alert("PIN incorrecto. No se realizó ningún cambio.");
+    cerrarModal();
+    return;
+  }
+  
   if (confirm('¿Seguro que deseas eliminar esta herramienta?')) {
     inventario.splice(index, 1);
     cargarInventario();
