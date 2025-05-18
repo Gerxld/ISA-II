@@ -473,10 +473,12 @@
       const multiplicador = getMultiplicadorPrecio(provincia, distrito, corregimiento);
 
       const sumaFinal = (totalServicios + (costoMano + adicional) * multiplicador).toFixed(2);
+      const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
+      const usuarioEmail = usuarioActual ? usuarioActual.correo : localStorage.getItem('usuarioActual');
 
       const registroHistorial = {
         id: Date.now(),
-        usuario: localStorage.getItem('usuarioActual'),
+        usuario: usuarioEmail,
         fecha: new Date().toISOString(),
         cliente: cliente,
         contacto: numero,

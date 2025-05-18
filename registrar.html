@@ -36,17 +36,28 @@
 
             let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
 
-            const existe = usuarios.some(u => u.correo === correo || correo === 'juanito.golondrina@gmail.com');
+            const existe = usuarios.some(u => u.correo === correo);
             if (existe) {
                 alert('Ese correo ya está registrado.');
                 return;
             }
 
-            usuarios.push({ nombre, apellido, correo, password });
+            const nuevoUsuario = {
+                nombre,
+                apellido,
+                correo,
+                password,
+                tipo: 'cliente'
+            };
+
+            usuarios.push(nuevoUsuario);
             localStorage.setItem('usuarios', JSON.stringify(usuarios));
 
-            alert('¡Usuario registrado con éxito!');
+            // Guardar el usuario actual como objeto completo
+            localStorage.setItem('usuarioActual', JSON.stringify(nuevoUsuario));
             localStorage.setItem('usuario', 'cliente');
+
+            alert('¡Usuario registrado con éxito!');
             window.location.href = 'cotizar.html';
         });
 

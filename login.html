@@ -32,26 +32,38 @@
             event.preventDefault();
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value.trim();
-            if (email === 'juanito.golondrina@gmail.com' && password === '12345') {
-                localStorage.setItem('usuario', 'cliente');
-                localStorage.setItem('usuarioActual', email);
-                window.location.href = 'cotizar.html';
-                return;
-            }
+
+            // Usuario hardcodeado admin
             if (email === 'admin.jefe@gmail.com' && password === '6789') {
                 localStorage.setItem('usuario', 'admin');
                 window.location.href = 'solicitudes.html';
                 return;
             }
-            const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
 
+            // Usuario hardcodeado cliente
+            if (email === 'juanito.golondrina@gmail.com' && password === '12345') {
+                const usuarioHardcodeado = {
+                    nombre: 'Juanito',
+                    apellido: 'Golondrina',
+                    correo: email,
+                    tipo: 'cliente'
+                };
+                localStorage.setItem('usuario', 'cliente');
+                localStorage.setItem('usuarioActual', JSON.stringify(usuarioHardcodeado));
+                window.location.href = 'cotizar.html';
+                return;
+            }
+
+            // Usuarios registrados
+            const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
             const usuarioEncontrado = usuarios.find(usuario =>
                 usuario.correo === email && usuario.password === password
             );
 
             if (usuarioEncontrado) {
                 localStorage.setItem('usuario', 'cliente');
-                localStorage.setItem('usuarioActual', email);
+                // Guardar el objeto completo del usuario
+                localStorage.setItem('usuarioActual', JSON.stringify(usuarioEncontrado));
                 window.location.href = 'cotizar.html';
             } else {
                 alert('Credenciales incorrectas.');
