@@ -1,11 +1,8 @@
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 0px;
+    padding: 80px 0 20px;
     background-color: #f9f9f9;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     min-height: 100vh;
     background-image: url('../img/Leonardo_Phoenix_Create_an_image_depicting_a_transportation_co_1.jpg');
     background-position: center;
@@ -16,29 +13,26 @@ body {
 
 .container {
     width: 90%;
-    max-width: 900px;
+    max-width: 1200px;
     background: white;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    margin: 20px;
+    margin: 20px auto;
     overflow: hidden;
 }
 
 header {
-    margin-bottom: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
 }
 
 .menu {
     background-color: #9d98e6;
-    border-radius: 20px;
-    top: 20px;
-    left: 40px;
-    right: 40px;
-    z-index: 1000;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    position: fixed;
+    padding: 10px 20px;
 }
 
 .menu ul {
@@ -46,14 +40,14 @@ header {
     padding: 0;
     margin: 0;
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
     flex-wrap: wrap;
+    gap: 15px;
 }
 
 .menu ul li {
-    display: inline;
-    margin: 5px;
+    display: inline-block;
 }
 
 .menu ul li a {
@@ -64,7 +58,6 @@ header {
     border-radius: 5px;
     transition: 0.3s;
     display: block;
-    text-align: center;
 }
 
 .menu ul li a:hover {
@@ -76,7 +69,6 @@ header {
     width: 80px;
     height: 80px;
     object-fit: contain;
-    margin: 0 auto;
 }
 
 .active {
@@ -87,6 +79,34 @@ h1 {
     font-size: 2rem;
     color: #333;
     margin-bottom: 20px;
+    text-align: center;
+}
+
+.filtros {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.filtros select,
+.filtros button {
+    padding: 8px 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.filtros button {
+    background-color: #585197;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.filtros button:hover {
+    background-color: #7e79d6;
 }
 
 .table-container {
@@ -101,147 +121,102 @@ h1 {
 
 table {
     width: 100%;
-    min-width: 600px;
     border-collapse: collapse;
 }
 
 table th,
 table td {
-    border: 1px solid #ccc;
-    padding: 10px;
+    border: 1px solid #ddd;
+    padding: 12px;
     text-align: left;
 }
 
 table th {
     background-color: #585197;
-    color: #ffffff;
+    color: white;
+    position: sticky;
+    top: 0;
 }
 
-.add-button,
-.delete-button,
-.edit-button {
-    display: block;
-    width: 100%;
-    max-width: 200px;
-    margin: 10px auto;
-    background-color: #5df15f;
+table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+table tr:hover {
+    background-color: #e6e6e6;
+}
+
+.ver-detalle {
+    background-color: #585197;
+    color: white;
     border: none;
-    padding: 10px 20px;
-    font-size: 1rem;
-    font-weight: bold;
-    color: #333;
-    border-radius: 5px;
+    padding: 6px 12px;
+    border-radius: 4px;
     cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-.add-button:hover,
-.delete-button:hover,
-.edit-button:hover {
-    background-color: #FFC300;
+.ver-detalle:hover {
+    background-color: #7e79d6;
 }
 
-.delete-button {
-    background-color: #e41a1a;
+/* Estilos para estados */
+.estado-pendiente {
+    color: #FFA500;
+    font-weight: bold;
 }
 
-button.confirm-delete-button {
-    background-color: #4CAF50;
-    color: #ffffff;
+.estado-completado {
+    color: #4CAF50;
+    font-weight: bold;
 }
 
-.button-group {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-    margin-top: 20px;
+.estado-cancelado {
+    color: #f44336;
+    font-weight: bold;
 }
 
-.button-group .add-button,
-.button-group .delete-button,
-.button-group .edit-button {
-    margin: 0;
-    width: 150px;
-}
-
+/* Modal */
 .modal {
     display: none;
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-    width: 90%;
-    max-width: 400px;
-}
-
-.modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
+    z-index: 1001;
     left: 0;
+    top: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 999;
 }
 
-.modal-header {
-    font-size: 18px;
-    margin-bottom: 10px;
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 700px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
 }
 
-.modal input,
-.modal select,
-.modal textarea {
-    width: calc(100% - 16px);
-    margin: 5px 0;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-.modal button {
-    width: 48%;
-    margin-top: 10px;
-    padding: 8px;
-    border: none;
-    border-radius: 4px;
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
     cursor: pointer;
-    box-sizing: border-box;
 }
 
-.modal .confirm-button {
-    background-color: #4CAF50;
-    color: white;
+.close:hover {
+    color: black;
 }
 
-.modal .cancel-button {
-    background-color: #f44336;
-    color: white;
-}
-
-.modal.active,
-.modal-overlay.active {
-    display: block;
-}
-
-/* Estilos responsive */
+/* Responsive */
 @media (max-width: 768px) {
     .menu ul {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    table,
-    th,
-    td {
-        font-size: 0.9rem;
+        gap: 8px;
     }
 
     .logo {
@@ -249,28 +224,67 @@ button.confirm-delete-button {
         height: 60px;
     }
 
-    h1 {
-        font-size: 1.8rem;
+    table th,
+    table td {
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+
+    .modal-content {
+        width: 90%;
+        margin: 10% auto;
     }
 }
 
 @media (max-width: 480px) {
+    body {
+        padding-top: 70px;
+    }
+
     .menu ul {
-        padding: 10px;
+        gap: 5px;
     }
 
-    table th,
-    table td {
-        padding: 8px;
+    .menu ul li a {
+        padding: 6px 10px;
+        font-size: 0.9rem;
     }
 
-    .add-button,
-    .delete-button,
-    .edit-button {
-        max-width: 100%;
+    .logo {
+        width: 50px;
+        height: 50px;
     }
 
     h1 {
         font-size: 1.5rem;
     }
+
+    table th,
+    table td {
+        padding: 6px;
+        font-size: 0.8rem;
+    }
+
+    .ver-detalle {
+        padding: 4px 8px;
+        font-size: 0.8rem;
+    }
+}
+.cancelar-btn {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.cancelar-btn:hover {
+    background-color: #d32f2f;
+}
+
+.estado-cancelado {
+    color: #f44336;
+    font-weight: bold;
 }

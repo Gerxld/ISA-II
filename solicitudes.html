@@ -78,13 +78,16 @@
       pendientes.innerHTML = '';
       rechazadas.innerHTML = '';
 
-      if (solicitudes.length === 0) {
+      // Filtrar para no mostrar las canceladas
+      const solicitudesMostrar = solicitudes.filter(s => s.estado !== 'cancelado');
+
+      if (solicitudesMostrar.length === 0) {
         pendientes.innerHTML = '<p class="sin-solicitudes">No hay solicitudes pendientes</p>';
         rechazadas.innerHTML = '<p class="sin-solicitudes">No hay solicitudes rechazadas</p>';
         return;
       }
 
-      solicitudes.forEach(solicitud => {
+      solicitudesMostrar.forEach(solicitud => {
         const card = document.createElement('div');
         card.className = 'solicitud-card';
 
