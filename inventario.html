@@ -170,8 +170,6 @@ function guardarHerramienta() {
   cargarInventario();
 }
 
-
-
 function eliminarHerramienta(index) {
   const pinIngresado = prompt("Ingresa el PIN de seguridad:");
   if (pinIngresado !== PIN_SEGURIDAD) {
@@ -179,7 +177,7 @@ function eliminarHerramienta(index) {
     cerrarModal();
     return;
   }
-  
+
   if (confirm('¿Seguro que deseas eliminar esta herramienta?')) {
     inventario.splice(index, 1);
     cargarInventario();
