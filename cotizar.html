@@ -33,10 +33,10 @@
           <button type="button" class="accordion">Datos del Cliente</button>
           <div class="panel">
             <label for="nombreCliente">Nombre del Cliente:</label>
-            <input type="text" id="nombreCliente" placeholder="Escriba el nombre">
+            <input type="text" id="nombreCliente" placeholder="Escriba el nombre" required>
 
             <label for="numeroCliente">Número celular del Cliente:</label>
-            <input type="text" id="numeroCliente" placeholder="Escriba el número">
+            <input type="text" id="numeroCliente" placeholder="Escriba el número" required>
 
             <label for="fechaServicio">Fecha requerida para el servicio:</label>
             <input type="date" id="fechaServicio" required>
@@ -46,9 +46,11 @@
           <button type="button" class="accordion">Detalles del Trabajo</button>
           <div class="panel">
             <label for="tiposTrabajos">Tipo de Trabajo:</label>
-            <select id="tiposTrabajos">
+            <select id="tiposTrabajos" required>
+              <option value="">Seleccione un tipo de trabajo</option>
               <option value="Acarreo">Acarreo</option>
-              <option value="Wincheo">Wincheo</option>
+              <option value="Wincheo">Wincheo (es una máquina que se utiliza para levantar o arrastrar objetos pesados.)
+              </option>
               <option value="Mudanza Internas">Mudanza Internas</option>
             </select>
 
@@ -56,7 +58,7 @@
             <div id="colaboradores-lista"></div>
 
             <!-- Dirección de Partida -->
-            <h3>Dirección de Partida</h3>
+            <h1 class="direccion-titulo">Dirección de Partida</h1>
 
             <label for="provincia-partida">Provincia:</label>
             <select id="provincia-partida" required></select>
@@ -73,7 +75,7 @@
             <hr>
 
             <!-- Dirección de Llegada -->
-            <h3>Dirección de Llegada</h3>
+            <h1 class="direccion-titulo">Dirección de Llegada</h1>
 
             <label for="provincia-llegada">Provincia:</label>
             <select id="provincia-llegada" required></select>
@@ -95,44 +97,36 @@
           <!-- Servicios Adicionales -->
           <button type="button" class="accordion">Servicios</button>
           <div class="panel panel-servicios">
-            <label for="montaCarga">
-              <input type="checkbox" id="montaCarga">
-              <span>Monta Carga</span>
-              <span class="precio">$100</span>
-            </label>
+            <div class="servicio-card">
+              <label for="montaCarga">
+                <img src="img/cargaMontada.png" alt="Monta carga" class="servicio-imagen">
+                <input type="checkbox" id="montaCarga">
+                <span>Monta Carga</span>
+                <span class="precio">$100</span>
+                <p class="recomendacion">Recomendado para muebles pesados o electrodomésticos grandes</p>
+              </label>
+            </div>
 
-            <label for="material">
-              <input type="checkbox" id="material">
-              <span>Sogas y cintas adhesivas</span>
-              <span class="precio">$30</span>
-            </label>
+            <div class="servicio-card">
+              <label for="material">
+                <img src="img/cintas.png" alt="cintas" class="servicio-imagen">
+                <input type="checkbox" id="material">
+                <span>Sogas y cintas adhesivas</span>
+                <span class="precio">$30</span>
+                <p class="recomendacion">Esencial para asegurar carga durante el transporte</p>
+              </label>
+            </div>
 
-            <label for="materialEmbalaje">
-              <input type="checkbox" id="materialEmbalaje">
-              <span>Material de embalaje</span>
-              <span class="precio">$25</span>
-            </label>
-
-            <label for="camionPequeño">
-              <input type="checkbox" id="camionPequeño">
-              <span>Camión Pequeño</span>
-              <span class="precio">$90</span>
-            </label>
-
-            <label for="camionGrande">
-              <input type="checkbox" id="camionGrande">
-              <span>Camión Grande</span>
-              <span class="precio">$150</span>
-            </label>
-
-            <label for="camionPlancha">
-              <input type="checkbox" id="camionPlancha">
-              <span>Camión de Plancha</span>
-              <span class="precio">$200</span>
-            </label>
+            <div class="servicio-card">
+              <label for="materialEmbalaje">
+                <img src="img/embalaje.png" alt="Material de embalaje" class="servicio-imagen">
+                <input type="checkbox" id="materialEmbalaje">
+                <span>Material de embalaje</span>
+                <span class="precio">$25</span>
+                <p class="recomendacion">Protege tus objetos frágiles durante la mudanza</p>
+              </label>
+            </div>
           </div>
-
-
 
           <input type="button" value="Guardar" onclick="guardarSolicitud()">
         </form>
@@ -151,6 +145,23 @@
   </div>
 
   <script>
+    // Cargar datos del usuario al iniciar
+    document.addEventListener('DOMContentLoaded', function () {
+      const usuario = JSON.parse(localStorage.getItem('usuarioActual'));
+      if (usuario) {
+        document.getElementById('nombreCliente').value = `${usuario.nombre} ${usuario.apellido}`;
+      }
+
+      // Establecer fecha actual
+      const hoy = new Date().toISOString().split('T')[0];
+      document.getElementById('fecha-cotizacion').textContent = hoy;
+
+      // Actualizar precios al cambiar cualquier opción
+      document.querySelectorAll('#cotizarForm input, #cotizarForm select').forEach(element => {
+        element.addEventListener('change', actualizarPrecios);
+      });
+    });
+
     const userType = localStorage.getItem('usuario');
     if (userType === 'admin') {
       alert('No tienes permiso para ver esta página.');
@@ -189,16 +200,15 @@
       ]
     };
 
-
     function mostrarColaboradores() {
       const tipoTrabajo = document.getElementById("tiposTrabajos").value;
       const colaboradoresLista = document.getElementById("colaboradores-lista");
       const colaboradores = colaboradoresPorTrabajo[tipoTrabajo] || [];
       colaboradoresLista.innerHTML = `
-    <ul>
-      ${colaboradores.map(c => `<li>${c.nombre} - <strong>$${c.pago}/h</strong></li>`).join("")}
-    </ul>
-  `;
+        <ul>
+          ${colaboradores.map(c => `<li>${c.nombre} - <strong>$${c.pago}/h</strong></li>`).join("")}
+        </ul>
+      `;
     }
 
     document.getElementById("tiposTrabajos").addEventListener("change", mostrarColaboradores);
@@ -208,9 +218,6 @@
       "montaCarga": 100,
       "material": 30,
       "materialEmbalaje": 25,
-      "camionPequeño": 90,
-      "camionGrande": 150,
-      "camionPlancha": 200
     };
 
     const costoManoObra = {
@@ -225,6 +232,82 @@
       "Mudanza Internas": 500
     };
 
+    // Precios por corregimiento
+    const preciosCorregimiento = {
+      "Panamá": {
+        "Ciudad de Panamá": {
+          "Bethania": 1.0,
+          "San Francisco": 1.1,
+          "Juan Díaz": 1.2
+        },
+        "San Miguelito": {
+          "Belisario Porras": 1.0,
+          "Arnulfo Arias": 1.1,
+          "Victoriano Lorenzo": 1.2
+        }
+      },
+      "Panamá Oeste": {
+        "Arraiján": {
+          "Vista Alegre": 1.2,
+          "Burunga": 1.3,
+          "Juan Demóstenes Arosemena": 1.4
+        },
+        "La Chorrera": {
+          "Barrio Colón": 1.2,
+          "Barrio Balboa": 1.3,
+          "Playa Leona": 1.4
+        }
+      }
+    };
+
+    function getMultiplicadorPrecio(provincia, distrito, corregimiento) {
+      if (preciosCorregimiento[provincia] &&
+        preciosCorregimiento[provincia][distrito] &&
+        preciosCorregimiento[provincia][distrito][corregimiento]) {
+        return preciosCorregimiento[provincia][distrito][corregimiento];
+      }
+      return 1.0; // Precio base si no hay ajuste
+    }
+
+    function actualizarPrecios() {
+      const tipoTrabajo = document.getElementById("tiposTrabajos").value;
+      if (!tipoTrabajo) {
+        return; // No hacer nada si no hay tipo de trabajo seleccionado
+      }
+
+      // Calcular precio base según ubicación
+      const provincia = document.getElementById("provincia-llegada").value;
+      const distrito = document.getElementById("distrito-llegada").value;
+      const corregimiento = document.getElementById("corregimiento-llegada").value;
+
+      let multiplicador = 1.0;
+      if (provincia && distrito && corregimiento) {
+        multiplicador = getMultiplicadorPrecio(provincia, distrito, corregimiento);
+      }
+
+      const precioBase = (costoManoObra[tipoTrabajo] + costoAdicionalTrabajo[tipoTrabajo]) * multiplicador;
+
+      // Calcular servicios adicionales
+      let serviciosTotal = 0;
+      Object.keys(servicioValores).forEach(id => {
+        const checkbox = document.getElementById(id);
+        if (checkbox && checkbox.checked) {
+          serviciosTotal += servicioValores[id];
+        }
+      });
+
+      // Actualizar la interfaz
+      document.getElementById('precio-base').textContent = precioBase.toFixed(2);
+      document.getElementById('precio-servicios').textContent = serviciosTotal.toFixed(2);
+      document.getElementById('total-cotizacion').textContent = (precioBase + serviciosTotal).toFixed(2);
+    }
+
+    const ubicacionesSalida = {
+      "Panamá": {
+        "Ciudad de Panamá": ["Bethania", "San Francisco", "Juan Díaz"],
+        "San Miguelito": ["Belisario Porras", "Arnulfo Arias", "Victoriano Lorenzo"]
+      }
+    }
     const ubicaciones = {
       "Panamá": {
         "Ciudad de Panamá": ["Bethania", "San Francisco", "Juan Díaz"],
@@ -274,7 +357,7 @@
 
     function cargarProvinciasPartida() {
       provinciaPartida.innerHTML = '<option value="">Seleccione provincia</option>';
-      for (let prov in ubicaciones) {
+      for (let prov in ubicacionesSalida) {
         provinciaPartida.innerHTML += `<option value="${prov}">${prov}</option>`;
       }
     }
@@ -283,8 +366,8 @@
       const prov = provinciaPartida.value;
       distritoPartida.innerHTML = '<option value="">Seleccione distrito</option>';
       corregimientoPartida.innerHTML = '<option value="">Seleccione corregimiento</option>';
-      if (ubicaciones[prov]) {
-        for (let dist in ubicaciones[prov]) {
+      if (ubicacionesSalida[prov]) {
+        for (let dist in ubicacionesSalida[prov]) {
           distritoPartida.innerHTML += `<option value="${dist}">${dist}</option>`;
         }
       }
@@ -294,8 +377,8 @@
       const prov = provinciaPartida.value;
       const dist = distritoPartida.value;
       corregimientoPartida.innerHTML = '<option value="">Seleccione corregimiento</option>';
-      if (ubicaciones[prov] && ubicaciones[prov][dist]) {
-        ubicaciones[prov][dist].forEach(corr => {
+      if (ubicacionesSalida[prov] && ubicacionesSalida[prov][dist]) {
+        ubicacionesSalida[prov][dist].forEach(corr => {
           corregimientoPartida.innerHTML += `<option value="${corr}">${corr}</option>`;
         });
       }
@@ -345,6 +428,30 @@
     cargarProvinciasLlegada();
 
     function guardarSolicitud() {
+      // Validar campos obligatorios
+      const requiredFields = [
+        'nombreCliente', 'numeroCliente', 'fechaServicio', 'tiposTrabajos',
+        'provincia-partida', 'distrito-partida', 'corregimiento-partida', 'direccionPartida',
+        'provincia-llegada', 'distrito-llegada', 'corregimiento-llegada', 'direccionLlegada',
+        'descripcion'
+      ];
+
+      let isValid = true;
+      requiredFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (!field.value) {
+          field.style.border = '1px solid red';
+          isValid = false;
+        } else {
+          field.style.border = '';
+        }
+      });
+
+      if (!isValid) {
+        alert('Por favor complete todos los campos obligatorios marcados en rojo.');
+        return;
+      }
+
       const cliente = document.getElementById("nombreCliente").value;
       const numero = document.getElementById("numeroCliente").value;
       const fechaServicio = document.getElementById("fechaServicio").value;
@@ -358,10 +465,18 @@
       const { total: totalServicios, serviciosDetalle } = calcularTotalServicios();
       const costoMano = costoManoObra[tipoTrabajo] || 0;
       const adicional = costoAdicionalTrabajo[tipoTrabajo] || 0;
-      const sumaFinal = totalServicios + costoMano + adicional;
+
+      // Aplicar multiplicador de precio según ubicación
+      const provincia = document.getElementById("provincia-llegada").value;
+      const distrito = document.getElementById("distrito-llegada").value;
+      const corregimiento = document.getElementById("corregimiento-llegada").value;
+      const multiplicador = getMultiplicadorPrecio(provincia, distrito, corregimiento);
+
+      const sumaFinal = (totalServicios + (costoMano + adicional) * multiplicador).toFixed(2);
+
       const registroHistorial = {
         id: Date.now(),
-        usuario: localStorage.getItem('usuarioActual'), 
+        usuario: localStorage.getItem('usuarioActual'),
         fecha: new Date().toISOString(),
         cliente: cliente,
         contacto: numero,
@@ -397,20 +512,21 @@
       localStorage.setItem('solicitudes', JSON.stringify(solicitudes));
 
       let contenido = `
-    <p><strong>Nombre:</strong> ${cliente}</p>
-    <p><strong>Contacto:</strong> ${numero}</p>
-    <p><strong>Fecha del Servicio:</strong> ${fechaServicio}</p>
-    <p><strong>Tipo de Trabajo:</strong> ${tipoTrabajo}</p>
-    <h4>Servicios Adicionales:</h4>
-    <ul>${serviciosDetalle.map(servicio => `<li>${servicio.nombre}: $${servicio.valor}</li>`).join("")}</ul>
-    <p><strong>Total:</strong> $${sumaFinal}</p>
-    <p style="color: green; font-weight: bold;">¡Solicitud enviada correctamente!</p>
-  `;
+        <p><strong>Nombre:</strong> ${cliente}</p>
+        <p><strong>Contacto:</strong> ${numero}</p>
+        <p><strong>Fecha solicitada para el servicio:</strong> ${fechaServicio}</p>
+        <p><strong>Tipo de Trabajo:</strong> ${tipoTrabajo}</p>
+        <p><strong>Ubicación:</strong> ${direccionPartida} → ${direccionLlegada}</p>
+        <h4>Servicios Adicionales:</h4>
+        <ul>${serviciosDetalle.map(servicio => `<li>${servicio.nombre}: $${servicio.valor}</li>`).join("")}</ul>
+        <p><strong>Total:</strong> $${sumaFinal}</p>
+        <p style="color: green; font-weight: bold;">¡Solicitud enviada correctamente!</p>
+      `;
 
       document.getElementById("modal-content").innerHTML = contenido;
       document.getElementById("modal").style.display = "flex";
-      document.getElementById("cotizarForm").reset();
     }
+
     function calcularTotalServicios() {
       let total = 0;
       const serviciosDetalle = [];
@@ -438,23 +554,23 @@
       menu.innerHTML = '<li><img src="img/logo.png" alt="Logo" class="logo"></li>';
       if (userType === 'admin') {
         menu.innerHTML += `
-      <li><a href="solicitudes.html">Solicitudes</a></li>
-      <li><a href="agenda.html">Agenda</a></li>
-      <li><a href="inventario.html">Inventario</a></li>
-      <li><a href="colaboradores.html">Colaboradores</a></li>
-      <li><a href="#" id="logout">Cerrar sesión</a></li>
-    `;
+          <li><a href="solicitudes.html">Solicitudes</a></li>
+          <li><a href="agenda.html">Agenda</a></li>
+          <li><a href="inventario.html">Inventario</a></li>
+          <li><a href="colaboradores.html">Colaboradores</a></li>
+          <li><a href="#" id="logout">Cerrar sesión</a></li>
+        `;
       } else if (userType === 'cliente') {
         menu.innerHTML += `
-      <li><a href="cotizar.html" class="active">Cotizar</a></li>
-      <li><a href="historial.html">Mi Historial</a></li>
-      <li><a href="#" id="logout">Cerrar sesión</a></li>
-    `;
+          <li><a href="cotizar.html" class="active">Cotizar</a></li>
+          <li><a href="historial.html">Mi Historial</a></li>
+          <li><a href="#" id="logout">Cerrar sesión</a></li>
+        `;
       } else {
         menu.innerHTML += `
-      <li><a href="index.html">Inicio</a></li>
-      <li><a href="login.html">Iniciar sesión</a></li>
-    `;
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="login.html">Iniciar sesión</a></li>
+        `;
       }
     }
     const logout = document.getElementById('logout');
