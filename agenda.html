@@ -31,14 +31,14 @@
         <table>
           <thead>
             <tr>
-              <th>Fecha Solicitada</th>
+              <th>Fecha</th>
               <th>Cliente</th>
               <th>Contacto</th>
               <th>Servicio</th>
               <th>Descripción (Admin)</th>
               <th>Ubicación Origen</th>
               <th>Ubicación Destino</th>
-              <th>Fecha Cotizacion</th>
+              <th>Fecha Solicitud</th>
               <th>Trabajador</th>
               <th>Equipo</th>
               <th>Acciones</th>
@@ -261,35 +261,15 @@
         return;
       }
 
-      // Ordenar por fecha de servicio
-      agenda.sort((a, b) => new Date(a.fechaServicio) - new Date(b.fechaServicio));
+      agenda.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
 
       agenda.forEach((item, index) => {
         const colaboradorAsignado = colaboradores.find(c => c.id === item.trabajadorId);
         const estadoColab = colaboradorAsignado ? colaboradorAsignado.estado : 'No asignado';
 
         const row = document.createElement('tr');
-
-        // Función para formatear fechas de manera segura
-        function formatearFecha(fechaISO) {
-          if (!fechaISO) return 'Sin fecha';
-          try {
-            const fecha = new Date(fechaISO);
-            if (isNaN(fecha.getTime())) {
-              return 'Fecha inválida';
-            }
-            return fecha.toLocaleDateString('es-ES', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            });
-          } catch (e) {
-            return 'Fecha inválida';
-          }
-        }
-
-        const fechaServicio = formatearFecha(item.fechaServicio);
-        const fechaSolicitud = formatearFecha(item.fechaSolicitud);
+        const fechaFormateada = item.fecha ? new Date(item.fecha).toLocaleDateString('es-ES') : 'Sin fecha';
+        const fechaSolicitud = item.fecha ? new Date(item.fecha).toLocaleDateString('es-ES') : 'Desconocida';
 
         row.innerHTML = `
           <td>${fechaFormateada}</td>
@@ -317,6 +297,5 @@
     cargarAgenda();
   </script>
 </body>
-
 
 </html>
