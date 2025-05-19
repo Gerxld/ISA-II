@@ -7,158 +7,181 @@
   <link rel="stylesheet" href="estilos/colaboradores.css">
 </head>
 <body>
+  <div class="container">
+    <header>
+      <nav class="menu">
+        <ul id="menu-lista">
+          <li><img src="img/logo.png" alt="Logo" class="logo"></li>
+          <li><a href="solicitudes.html">Solicitudes</a></li>
+          <li><a href="agenda.html">Agenda</a></li>
+          <li><a href="inventario.html">Inventario</a></li>
+          <li><a href="colaboradores.html" class="active">Colaboradores</a></li>
+          <li><a href="historial.html">Historial</a></li>
+          <li><a href="#" id="logout">Cerrar sesión</a></li>
+        </ul>
+      </nav>
+    </header>
 
-<header>
-  <nav class="menu">
-    <ul></ul>
-  </nav>
-</header>
+    <main>
+      <h1>Listado de Colaboradores</h1>
 
-<div class="container">
-  <main>
-    <h1>Listado de Colaboradores</h1>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Identificación</th>
+              <th>Especialidad</th>
+              <th>Pago x Hora</th>
+            </tr>
+          </thead>
+          <tbody id="colaboradores-body">
+            <!-- Colaboradores cargados aquí -->
+          </tbody>
+        </table>
+      </div>
+      <div class="button-group">
+        <button class="add-button" id="btn-agregar">Agregar Colaborador</button>
+        <button class="delete-button" id="btn-eliminar">Eliminar Colaborador</button>
+      </div>
+    </main>
+  </div>
 
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Identificación</th>
-            <th>Especialidad</th>
-            <th>Pago x Hora</th>
-          </tr>
-        </thead>
-        <tbody id="colaboradores-body">
-          <!-- Colaboradores cargados aquí -->
-        </tbody>
-      </table>
-    </div>
-    <div class="button-group">
-      <button class="add-button" id="btn-agregar">Agregar Colaborador</button>
-      <button class="delete-button" id="btn-eliminar">Eliminar Colaborador</button>
-    </div>
-  </main>
-</div>
-<!-- Modal Agregar -->
-<div class="modal-overlay" id="overlay-agregar"></div>
-<div class="modal" id="modal-agregar">
-  <div class="modal-header">Agregar Colaborador</div>
-  <input type="text" placeholder="Nombre" id="nombre">
-  <input type="text" placeholder="Identificación" id="id">
-  <input type="text" placeholder="Especialidad" id="especialidad">
-  <input type="text" placeholder="Pago x Hora" id="pago">
-  <button class="confirm-button" id="guardar-colaborador">Guardar</button>
-  <button class="cancel-button" onclick="cerrarModal('agregar')">Cancelar</button>
-</div>
+  <!-- Modales (mantenidos igual) -->
+  <div class="modal-overlay" id="overlay-agregar"></div>
+  <div class="modal" id="modal-agregar">
+    <div class="modal-header">Agregar Colaborador</div>
+    <input type="text" placeholder="Nombre" id="nombre">
+    <input type="text" placeholder="Identificación" id="id">
+    <input type="text" placeholder="Especialidad" id="especialidad">
+    <input type="text" placeholder="Pago x Hora" id="pago">
+    <button class="confirm-button" id="guardar-colaborador">Guardar</button>
+    <button class="cancel-button" onclick="cerrarModal('agregar')">Cancelar</button>
+  </div>
 
-<!-- Modal Eliminar -->
-<div class="modal-overlay" id="overlay-eliminar"></div>
-<div class="modal" id="modal-eliminar">
-  <div class="modal-header">Eliminar Colaborador</div>
-  <input type="text" placeholder="Identificación a eliminar" id="id-eliminar">
-  <button class="confirm-button" id="confirmar-eliminar">Eliminar</button>
-  <button class="cancel-button" onclick="cerrarModal('eliminar')">Cancelar</button>
-</div>
+  <div class="modal-overlay" id="overlay-eliminar"></div>
+  <div class="modal" id="modal-eliminar">
+    <div class="modal-header">Eliminar Colaborador</div>
+    <input type="text" placeholder="Identificación a eliminar" id="id-eliminar">
+    <button class="confirm-button" id="confirmar-eliminar">Eliminar</button>
+    <button class="cancel-button" onclick="cerrarModal('eliminar')">Cancelar</button>
+  </div>
 
-<script>
-  const userType = localStorage.getItem('usuario');
-  const menu = document.querySelector('.menu ul');
+  <script>
+    // Control de acceso y menú
+    const userType = localStorage.getItem('usuario');
+    const menu = document.getElementById('menu-lista');
+    const PIN_SEGURIDAD = "1234";
 
-  if (menu) {
-    menu.innerHTML = '<li><img src="img/logo.png" alt="Logo" class="logo"></li>';
-
-    if (userType === 'admin') {
-      menu.innerHTML += `
-        <li><a href="solicitudes.html">Solicitudes</a></li>
-        <li><a href="agenda.html">Agenda</a></li>
-        <li><a href="inventario.html">Inventario</a></li>
-        <li><a href="colaboradores.html" class="active">Colaboradores</a></li>
-        <li><a href="#" id="logout">Cerrar sesión</a></li>
-      `;
-    } else {
-      alert('Acceso no autorizado.');
-      window.location.href = 'index.html';
+    if (menu) {
+      if (userType === 'admin') {
+        menu.innerHTML = `
+          <li><img src="img/logo.png" alt="Logo" class="logo"></li>
+          <li><a href="solicitudes.html">Solicitudes</a></li>
+          <li><a href="agenda.html">Agenda</a></li>
+          <li><a href="inventario.html">Inventario</a></li>
+          <li><a href="colaboradores.html" class="active">Colaboradores</a></li>
+          <li><a href="historial.html">Historial</a></li>
+          <li><a href="#" id="logout">Cerrar sesión</a></li>
+        `;
+      } else {
+        alert('Acceso no autorizado.');
+        window.location.href = 'index.html';
+      }
     }
-  }
 
-  const logout = document.getElementById('logout');
-  if (logout) {
-    logout.addEventListener('click', function() {
-      localStorage.removeItem('usuario');
-      window.location.href = 'login.html';
-    });
-  }
+    // Resto del código JavaScript se mantiene igual...
+    const logout = document.getElementById('logout');
+    if (logout) {
+      logout.addEventListener('click', function() {
+        localStorage.removeItem('usuario');
+        window.location.href = 'login.html';
+      });
+    }
 
-  // Simulación de colaboradores
-  const colaboradores = [
-    { nombre: "Juan Pérez", id: "123456789", especialidad: "Conductor de camión", pago: "$10/h" },
-    { nombre: "Ana Gómez", id: "987654321", especialidad: "Operador de grúa", pago: "$12/h" },
-    { nombre: "Carlos Rodríguez", id: "456789123", especialidad: "Gestión de carga", pago: "$11/h" }
-  ];
+    // Simulación de colaboradores
+    const colaboradores = [
+      { nombre: "Juan Pérez", id: "123456789", especialidad: "Conductor de camión", pago: "$10/h" },
+      { nombre: "Ana Gómez", id: "987654321", especialidad: "Operador de grúa", pago: "$12/h" },
+      { nombre: "Carlos Rodríguez", id: "456789123", especialidad: "Gestión de carga", pago: "$11/h" }
+    ];
 
-  const tbody = document.getElementById('colaboradores-body');
+    const tbody = document.getElementById('colaboradores-body');
 
-  function cargarColaboradores() {
-    tbody.innerHTML = '';
-    colaboradores.forEach(colab => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${colab.nombre}</td>
-        <td>${colab.id}</td>
-        <td>${colab.especialidad}</td>
-        <td>${colab.pago}</td>
-      `;
-      tbody.appendChild(row);
-    });
-  }
+    function cargarColaboradores() {
+      tbody.innerHTML = '';
+      colaboradores.forEach(colab => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${colab.nombre}</td>
+          <td>${colab.id}</td>
+          <td>${colab.especialidad}</td>
+          <td>${colab.pago}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
 
-  cargarColaboradores();
+    cargarColaboradores();
+
     // Abrir y cerrar modales
     function abrirModal(tipo) {
-    document.getElementById(`modal-${tipo}`).style.display = 'block';
-    document.getElementById(`overlay-${tipo}`).style.display = 'block';
-  }
-
-  function cerrarModal(tipo) {
-    document.getElementById(`modal-${tipo}`).style.display = 'none';
-    document.getElementById(`overlay-${tipo}`).style.display = 'none';
-  }
-
-  document.getElementById('btn-agregar').addEventListener('click', () => abrirModal('agregar'));
-  document.getElementById('btn-eliminar').addEventListener('click', () => abrirModal('eliminar'));
-
-  // Guardar nuevo colaborador
-  document.getElementById('guardar-colaborador').addEventListener('click', () => {
-    const nuevo = {
-      nombre: document.getElementById('nombre').value,
-      id: document.getElementById('id').value,
-      especialidad: document.getElementById('especialidad').value,
-      pago: document.getElementById('pago').value
-    };
-
-    if (nuevo.nombre && nuevo.id && nuevo.especialidad && nuevo.pago) {
-      colaboradores.push(nuevo);
-      cargarColaboradores();
-      cerrarModal('agregar');
-    } else {
-      alert("Por favor, completa todos los campos.");
+      document.getElementById(`modal-${tipo}`).style.display = 'block';
+      document.getElementById(`overlay-${tipo}`).style.display = 'block';
     }
-  });
 
-  // Eliminar colaborador por ID
-  document.getElementById('confirmar-eliminar').addEventListener('click', () => {
-    const idEliminar = document.getElementById('id-eliminar').value;
-    const index = colaboradores.findIndex(c => c.id === idEliminar);
-    if (index !== -1) {
-      colaboradores.splice(index, 1);
-      cargarColaboradores();
-      cerrarModal('eliminar');
-    } else {
-      alert("No se encontró un colaborador con esa identificación.");
+    function cerrarModal(tipo) {
+      document.getElementById(`modal-${tipo}`).style.display = 'none';
+      document.getElementById(`overlay-${tipo}`).style.display = 'none';
     }
-  });
 
-</script>
+    document.getElementById('btn-agregar').addEventListener('click', () => abrirModal('agregar'));
+    document.getElementById('btn-eliminar').addEventListener('click', () => abrirModal('eliminar'));
 
+    // Guardar nuevo colaborador
+    document.getElementById('guardar-colaborador').addEventListener('click', () => {
+      const pinIngresado = prompt("Ingresa el PIN de seguridad:");
+      if (pinIngresado !== PIN_SEGURIDAD) {
+        alert("PIN incorrecto. No se realizó ningún cambio.");
+        cerrarModal('agregar');
+        return;
+      }
+
+      const nuevo = {
+        nombre: document.getElementById('nombre').value,
+        id: document.getElementById('id').value,
+        especialidad: document.getElementById('especialidad').value,
+        pago: document.getElementById('pago').value
+      };
+
+      if (nuevo.nombre && nuevo.id && nuevo.especialidad && nuevo.pago) {
+        colaboradores.push(nuevo);
+        cargarColaboradores();
+        cerrarModal('agregar');
+      } else {
+        alert("Por favor, completa todos los campos.");
+      }
+    });
+
+    // Eliminar colaborador por ID
+    document.getElementById('confirmar-eliminar').addEventListener('click', () => {
+      const pinIngresado = prompt("Ingresa el PIN de seguridad:");
+      if (pinIngresado !== PIN_SEGURIDAD) {
+        alert("PIN incorrecto. No se realizó ningún cambio.");
+        cerrarModal('eliminar');
+        return;
+      }
+
+      const idEliminar = document.getElementById('id-eliminar').value;
+      const index = colaboradores.findIndex(c => c.id === idEliminar);
+      if (index !== -1) {
+        colaboradores.splice(index, 1);
+        cargarColaboradores();
+        cerrarModal('eliminar');
+      } else {
+        alert("No se encontró un colaborador con esa identificación.");
+      }
+    });
+  </script>
 </body>
 </html>
