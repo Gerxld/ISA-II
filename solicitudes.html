@@ -156,28 +156,46 @@
     function aceptarSolicitud(id) {
       let solicitudes = JSON.parse(localStorage.getItem('solicitudes')) || [];
       let historial = JSON.parse(localStorage.getItem('historial')) || [];
+      let agenda = JSON.parse(localStorage.getItem('agenda')) || [];
 
       const solicitudIndex = solicitudes.findIndex(s => s.id === id);
       if (solicitudIndex !== -1) {
+        const solicitud = solicitudes[solicitudIndex];
+        const historialItem = historial.find(h => h.id === id);
+
+        // Crear objeto para la agenda con todos los datos necesarios
+        const nuevoAgendado = {
+          id: solicitud.id,
+          cliente: solicitud.cliente,
+          contacto: solicitud.contacto,
+          servicio: solicitud.servicio,
+          descripcion: solicitud.descripcion,
+          descripcionAdmin: '', // Inicialmente vacío
+          origen: solicitud.origen,
+          destino: solicitud.destino,
+          total: solicitud.total,
+          estado: 'agendado',
+          fechaServicio: historialItem ? historialItem.fechaServicio : solicitud.fecha,
+          fechaSolicitud: historialItem ? historialItem.fechaCotizacion : new Date().toISOString(),
+          trabajador: '', // Inicialmente vacío
+          equipo: '' // Inicialmente vacío
+        };
+
+        // Agregar a la agenda
+        agenda.push(nuevoAgendado);
+        localStorage.setItem('agenda', JSON.stringify(agenda));
+
+        // Actualizar estado en solicitudes
         solicitudes[solicitudIndex].estado = 'aceptada';
         localStorage.setItem('solicitudes', JSON.stringify(solicitudes));
 
+        // Actualizar estado en historial si existe
         const historialIndex = historial.findIndex(h => h.id === id);
-        let fechaOriginal = new Date().toISOString(); // fallback por si no hay historial
-
         if (historialIndex !== -1) {
           historial[historialIndex].estado = 'aceptada';
-          fechaOriginal = historial[historialIndex].fecha || fechaOriginal;
+          historial[historialIndex].fechaCambioEstado = new Date().toISOString();
           localStorage.setItem('historial', JSON.stringify(historial));
         }
-
-        let agenda = JSON.parse(localStorage.getItem('agenda')) || [];
-        agenda.push({
-          ...solicitudes[solicitudIndex],
-          estado: 'agendado',
-          fecha: fechaOriginal // se asegura de guardar la fecha original
-        });
-        localStorage.setItem('agenda', JSON.stringify(agenda));
 
         mostrarModal();
       }
@@ -214,4 +232,5 @@
     cargarSolicitudes();
   </script>
 </body>
+
 </html>
