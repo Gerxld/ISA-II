@@ -9,19 +9,18 @@
 </head>
 
 <body>
-
-    <header>
-        <nav class="menu">
-            <ul>
-                <li><img src="img/logo.png" alt="Logo" class="logo"></li>
-                <li><a href="cotizar.html">Cotizar</a></li>
-                <li><a href="historial.html" class="active">Mi Historial</a></li>
-                <li><a href="#" id="logout">Cerrar sesión</a></li>
-            </ul>
-        </nav>
-    </header>
-
     <div class="container">
+        <header>
+            <nav class="menu">
+                <ul id="menu-lista">
+                    <li><img src="img/logo.png" alt="Logo" class="logo"></li>
+                    <li><a href="cotizar.html">Cotizar</a></li>
+                    <li><a href="historial.html" class="active">Mi Historial</a></li>
+                    <li><a href="#" id="logout">Cerrar sesión</a></li>
+                </ul>
+            </nav>
+        </header>
+
         <main>
             <h1>Mi Historial de Servicios</h1>
 
@@ -66,14 +65,34 @@
     </div>
 
     <script>
+        // Control de acceso y menú
         const userType = localStorage.getItem('usuario');
-        if (!userType || userType === 'admin') {
-            window.location.href = 'index.html';
+        const menu = document.getElementById('menu-lista');
+
+        if (menu) {
+            if (userType === 'admin') {
+                menu.innerHTML = `
+                    <li><img src="img/logo.png" alt="Logo" class="logo"></li>
+                    <li><a href="solicitudes.html">Solicitudes</a></li>
+                    <li><a href="agenda.html">Agenda</a></li>
+                    <li><a href="inventario.html">Inventario</a></li>
+                    <li><a href="colaboradores.html">Colaboradores</a></li>
+                    <li><a href="historial.html" class="active">Historial</a></li>
+                    <li><a href="#" id="logout">Cerrar sesión</a></li>
+                `;
+            } else {
+                menu.innerHTML = `
+                    <li><img src="img/logo.png" alt="Logo" class="logo"></li>
+                    <li><a href="cotizar.html">Cotizar</a></li>
+                    <li><a href="historial.html" class="active">Mi Historial</a></li>
+                    <li><a href="#" id="logout">Cerrar sesión</a></li>
+                `;
+            }
         }
 
         const logout = document.getElementById('logout');
         if (logout) {
-            logout.addEventListener('click', function () {
+            logout.addEventListener('click', function() {
                 localStorage.removeItem('usuario');
                 localStorage.removeItem('usuarioActual');
                 window.location.href = 'login.html';
@@ -102,7 +121,7 @@
 
             const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
             if (!usuarioActual) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Debe iniciar sesión</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Debe iniciar sesión</td></tr>';
                 return;
             }
 
@@ -117,7 +136,7 @@
             }
 
             if (historial.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">No hay registros en tu historial</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">No hay registros en tu historial</td></tr>';
                 return;
             }
 
@@ -132,28 +151,30 @@
                 const estadoClass = item.estado ? `estado-${item.estado.toLowerCase()}` : 'estado-pendiente';
 
                 row.innerHTML = `
-            <td>${fechaCotizacion}</td>
-            <td>${fechaServicio}</td>
-            <td>${item.servicio || 'Sin servicio'}</td>
-            <td>${origen.corregimiento}, ${origen.distrito}</td>
-            <td>${destino.corregimiento}, ${destino.distrito}</td>
-            <td class="${estadoClass}">${item.estado || 'Pendiente'}</td>
-            <td>$${item.total || '0'}</td>
-            <td><button class="ver-detalle" data-id="${item.id}">Ver detalles</button></td>
-            <td>${item.estado === 'pendiente' ? `<button class="cancelar-btn" data-id="${item.id}">Cancelar</button>` : ''}</td>
-        `;
+                    <td>${fechaCotizacion}</td>
+                    <td>${fechaServicio}</td>
+                    <td>${item.servicio || 'Sin servicio'}</td>
+                    <td>${origen.corregimiento}, ${origen.distrito}</td>
+                    <td>${destino.corregimiento}, ${destino.distrito}</td>
+                    <td class="${estadoClass}">${item.estado || 'Pendiente'}</td>
+                    <td>$${item.total || '0'}</td>
+                    <td>
+                        <button class="ver-detalle" data-id="${item.id}">Ver detalles</button>
+                        ${item.estado === 'pendiente' ? `<button class="cancelar-btn" data-id="${item.id}">Cancelar</button>` : ''}
+                    </td>
+                `;
                 tbody.appendChild(row);
             });
 
             // Event listeners para los botones
             document.querySelectorAll('.ver-detalle').forEach(btn => {
-                btn.addEventListener('click', function () {
+                btn.addEventListener('click', function() {
                     mostrarDetalleServicio(this.getAttribute('data-id'));
                 });
             });
 
             document.querySelectorAll('.cancelar-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
+                btn.addEventListener('click', function() {
                     cancelarSolicitud(this.getAttribute('data-id'));
                 });
             });
@@ -242,12 +263,12 @@
         }
 
         // Cerrar modal al hacer clic en la X
-        document.querySelector('.close').addEventListener('click', function () {
+        document.querySelector('.close').addEventListener('click', function() {
             document.getElementById('modal-detalle').style.display = 'none';
         });
 
         // Cerrar modal al hacer clic fuera del contenido
-        window.addEventListener('click', function (event) {
+        window.addEventListener('click', function(event) {
             const modal = document.getElementById('modal-detalle');
             if (event.target === modal) {
                 modal.style.display = 'none';
@@ -259,5 +280,4 @@
         });
     </script>
 </body>
-
 </html>
