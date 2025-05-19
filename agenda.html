@@ -2,10 +2,10 @@
 <html lang="es">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Agenda</title>
-  <link rel="stylesheet" href="estilos/agenda.css">
+  <link rel="stylesheet" href="estilos/agenda.css" />
 </head>
 
 <body>
@@ -13,7 +13,7 @@
     <header>
       <nav class="menu">
         <ul id="menu-lista">
-          <li><img src="img/logo.png" alt="Logo" class="logo"></li>
+          <li><img src="img/logo.png" alt="Logo" class="logo" /></li>
           <li><a href="solicitudes.html">Solicitudes</a></li>
           <li><a href="agenda.html" class="active">Agenda</a></li>
           <li><a href="inventario.html">Inventario</a></li>
@@ -56,10 +56,13 @@
   <div class="modal-overlay" id="modal-overlay"></div>
   <div class="modal" id="edit-modal">
     <div class="modal-header">Editar Servicio</div>
-    <input type="text" id="input-trabajador" placeholder="Nombre del trabajador">
-    <input type="text" id="input-equipo" placeholder="Equipo asignado">
-    <input type="text" id="input-descripcion-admin" placeholder="Descripción desde admin">
-    <input type="password" id="input-pin" placeholder="PIN de seguridad">
+
+    <!-- Select para colaboradores -->
+    <select id="select-trabajador"></select>
+
+    <input type="text" id="input-equipo" placeholder="Equipo asignado" />
+    <input type="text" id="input-descripcion-admin" placeholder="Descripción desde admin" />
+    <input type="password" id="input-pin" placeholder="PIN de seguridad" />
     <div class="button-group">
       <button class="confirm-button" id="save-edit">Guardar</button>
       <button class="cancel-button" id="cancel-edit">Cancelar</button>
@@ -67,6 +70,7 @@
   </div>
 
   <script>
+    // Menu dinámico
     const userType = localStorage.getItem('usuario');
     const menu = document.getElementById('menu-lista');
 
@@ -78,7 +82,7 @@
           <li><a href="agenda.html" class="active">Agenda</a></li>
           <li><a href="inventario.html">Inventario</a></li>
           <li><a href="colaboradores.html">Colaboradores</a></li>
-          <li><a href="historial.html">Historial</a></li>
+          <li><a href="historialAdmin.html">Historial</a></li>
           <li><a href="#" id="logout">Cerrar sesión</a></li>
         `;
       } else {
@@ -87,6 +91,7 @@
       }
     }
 
+    // Logout
     const logout = document.getElementById('logout');
     if (logout) {
       logout.addEventListener('click', function () {
@@ -95,10 +100,11 @@
       });
     }
 
+    // Variables y elementos DOM
     const tbody = document.getElementById('agenda-body');
     const modal = document.getElementById('edit-modal');
     const overlay = document.getElementById('modal-overlay');
-    const inputTrabajador = document.getElementById('input-trabajador');
+    const selectTrabajador = document.getElementById('select-trabajador');
     const inputEquipo = document.getElementById('input-equipo');
     const inputDescripcionAdmin = document.getElementById('input-descripcion-admin');
     const inputPin = document.getElementById('input-pin');
@@ -106,19 +112,35 @@
     const cancelEditBtn = document.getElementById('cancel-edit');
 
     let agenda = JSON.parse(localStorage.getItem('agenda')) || [];
+    let colaboradores = JSON.parse(localStorage.getItem('colaboradores')) || [];
+    let historial = JSON.parse(localStorage.getItem('historial')) || [];
     let editIndex = null;
 
+    // Carga colaboradores en select
+    function cargarColaboradoresSelect() {
+      selectTrabajador.innerHTML = '<option value="">-- Seleccione un colaborador --</option>';
+      colaboradores.forEach(colab => {
+        selectTrabajador.innerHTML += `<option value="${colab.id}">${colab.nombre} (${colab.estado})</option>`;
+      });
+    }
+
+    // Abrir modal edición
     function abrirModal(index) {
       editIndex = index;
       const item = agenda[index];
-      inputTrabajador.value = item.trabajador || '';
+
+      cargarColaboradoresSelect();
+
+      selectTrabajador.value = item.trabajadorId || '';
       inputEquipo.value = item.equipo || '';
       inputDescripcionAdmin.value = item.descripcionAdmin || '';
       inputPin.value = '';
+
       modal.classList.add('active');
       overlay.classList.add('active');
     }
 
+    // Cerrar modal
     function cerrarModal() {
       modal.classList.remove('active');
       overlay.classList.remove('active');
@@ -126,6 +148,7 @@
 
     cancelEditBtn.addEventListener('click', cerrarModal);
 
+    // Guardar edición
     saveEditBtn.addEventListener('click', () => {
       const pin = inputPin.value;
       if (pin !== '1234') {
@@ -133,27 +156,102 @@
         return;
       }
 
-      agenda[editIndex].trabajador = inputTrabajador.value;
+      const colaboradorIdSeleccionado = selectTrabajador.value;
+
+      if (!colaboradorIdSeleccionado) {
+        alert("Debe seleccionar un colaborador");
+        return;
+      }
+
+      // Liberar colaborador previo si existe
+      if (agenda[editIndex].trabajadorId) {
+        const colaboradorPrevio = colaboradores.find(c => c.id === agenda[editIndex].trabajadorId);
+        if (colaboradorPrevio) {
+          colaboradorPrevio.estado = "Disponible";
+        }
+      }
+
+      // Asignar nuevo colaborador ocupado
+      const colaboradorNuevo = colaboradores.find(c => c.id === colaboradorIdSeleccionado);
+      if (colaboradorNuevo) {
+        colaboradorNuevo.estado = "Ocupado";
+      }
+
+      agenda[editIndex].trabajadorId = colaboradorIdSeleccionado;
+      agenda[editIndex].trabajador = colaboradorNuevo ? colaboradorNuevo.nombre : '';
       agenda[editIndex].equipo = inputEquipo.value;
       agenda[editIndex].descripcionAdmin = inputDescripcionAdmin.value;
+
+      localStorage.setItem('colaboradores', JSON.stringify(colaboradores));
       localStorage.setItem('agenda', JSON.stringify(agenda));
+
       cargarAgenda();
       cerrarModal();
     });
 
+    // Eliminar servicio
     function eliminar(index) {
       const pin = prompt("Ingrese el PIN de seguridad:");
       if (pin !== '1234') {
         alert('PIN incorrecto');
         return;
       }
+
+      // Liberar colaborador asignado
+      const colaboradorIdAsignado = agenda[index].trabajadorId;
+      if (colaboradorIdAsignado) {
+        const colaboradorAsignado = colaboradores.find(c => c.id === colaboradorIdAsignado);
+        if (colaboradorAsignado) {
+          colaboradorAsignado.estado = "Disponible";
+        }
+      }
+
       agenda.splice(index, 1);
       localStorage.setItem('agenda', JSON.stringify(agenda));
+      localStorage.setItem('colaboradores', JSON.stringify(colaboradores));
       cargarAgenda();
     }
 
+    // Marcar servicio como completado y mover a historial
+    function marcarCompletado(index) {
+      const pin = prompt("Ingresa el pin de seguridad para marcar como completado")
+      if (pin !== '1234') {
+        alert('PIN incorrecto');
+        return;
+      }
+
+      // Liberar colaborador asignado y mantener registro en historial
+      const servicio = agenda[index];
+
+      if (servicio.trabajadorId) {
+        const colaboradorAsignado = colaboradores.find(c => c.id === servicio.trabajadorId);
+        if (colaboradorAsignado) {
+          colaboradorAsignado.estado = "Disponible";
+        }
+      }
+
+      let historialAdmin = JSON.parse(localStorage.getItem('historialAdmin')) || [];
+      // Agregar a historial
+      historialAdmin.push(servicio);
+
+      // Quitar de agenda
+      agenda.splice(index, 1);
+
+      // Guardar cambios
+      localStorage.setItem('agenda', JSON.stringify(agenda));
+      localStorage.setItem('colaboradores', JSON.stringify(colaboradores));
+      localStorage.setItem('historialAdmin', JSON.stringify(historialAdmin));
+
+      alert("Servicio marcado como completado y movido a historial.");
+
+      cargarAgenda();
+    }
+
+    // Cargar agenda en tabla
     function cargarAgenda() {
-      agenda = JSON.parse(localStorage.getItem('agenda')) || [];
+       const agenda = JSON.parse(localStorage.getItem('agenda')) || [];
+      const colaboradores = JSON.parse(localStorage.getItem('colaboradores')) || [];
+      historial = JSON.parse(localStorage.getItem('historialAdmin')) || [];  
       tbody.innerHTML = '';
 
       if (agenda.length === 0) {
@@ -166,6 +264,9 @@
       agenda.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
 
       agenda.forEach((item, index) => {
+        const colaboradorAsignado = colaboradores.find(c => c.id === item.trabajadorId);
+        const estadoColab = colaboradorAsignado ? colaboradorAsignado.estado : 'No asignado';
+
         const row = document.createElement('tr');
         const fechaFormateada = item.fecha ? new Date(item.fecha).toLocaleDateString('es-ES') : 'Sin fecha';
         const fechaSolicitud = item.fecha ? new Date(item.fecha).toLocaleDateString('es-ES') : 'Desconocida';
@@ -179,12 +280,13 @@
           <td>${item.origen || 'Sin origen'}</td>
           <td>${item.destino || 'Sin destino'}</td>
           <td>${fechaSolicitud}</td>
-          <td>${item.trabajador || 'No asignado'}</td>
+          <td>${item.trabajador || 'No asignado'} (${estadoColab})</td>
           <td>${item.equipo || 'No asignado'}</td>
           <td>
             <div class="button-group">
               <button class="edit-button" onclick="abrirModal(${index})">Editar</button>
               <button class="delete-button" onclick="eliminar(${index})">Eliminar</button>
+              <button class="complete-button" onclick="marcarCompletado(${index})">Completar</button>
             </div>
           </td>
         `;
@@ -195,4 +297,5 @@
     cargarAgenda();
   </script>
 </body>
+
 </html>
