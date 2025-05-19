@@ -478,17 +478,20 @@
 
       const registroHistorial = {
         id: Date.now(),
-        usuario: usuarioEmail,
-        fecha: new Date().toISOString(),
-        cliente: cliente,
-        contacto: numero,
+        usuario: usuarioActual.correo,
+        fechaCotizacion: new Date().toISOString(), // Fecha actual de la cotización
+        fechaServicio: document.getElementById("fechaServicio").value,
+        cliente: document.getElementById("nombreCliente").value,
+        contacto: document.getElementById("numeroCliente").value,
         servicio: tipoTrabajo,
         descripcion: descripcion,
         origen: direccionPartida,
         destino: direccionLlegada,
         total: sumaFinal,
         estado: 'pendiente',
-        servicios: serviciosDetalle.map(s => s.nombre)
+        servicios: serviciosDetalle.map(s => s.nombre),
+        fechaCambioEstado: null,
+        motivoCambioEstado: null
       };
 
       let historial = JSON.parse(localStorage.getItem('historial')) || [];

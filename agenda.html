@@ -31,14 +31,14 @@
         <table>
           <thead>
             <tr>
-              <th>Fecha</th>
+              <th>Fecha Solicitada</th>
               <th>Cliente</th>
               <th>Contacto</th>
               <th>Servicio</th>
               <th>Descripción (Admin)</th>
               <th>Ubicación Origen</th>
               <th>Ubicación Destino</th>
-              <th>Fecha Solicitud</th>
+              <th>Fecha Cotizacion</th>
               <th>Trabajador</th>
               <th>Equipo</th>
               <th>Acciones</th>
@@ -163,31 +163,51 @@
         return;
       }
 
-      agenda.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+      // Ordenar por fecha de servicio
+      agenda.sort((a, b) => new Date(a.fechaServicio) - new Date(b.fechaServicio));
 
       agenda.forEach((item, index) => {
         const row = document.createElement('tr');
-        const fechaFormateada = item.fecha ? new Date(item.fecha).toLocaleDateString('es-ES') : 'Sin fecha';
-        const fechaSolicitud = item.fecha ? new Date(item.fecha).toLocaleDateString('es-ES') : 'Desconocida';
+
+        // Función para formatear fechas de manera segura
+        function formatearFecha(fechaISO) {
+          if (!fechaISO) return 'Sin fecha';
+          try {
+            const fecha = new Date(fechaISO);
+            if (isNaN(fecha.getTime())) {
+              return 'Fecha inválida';
+            }
+            return fecha.toLocaleDateString('es-ES', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            });
+          } catch (e) {
+            return 'Fecha inválida';
+          }
+        }
+
+        const fechaServicio = formatearFecha(item.fechaServicio);
+        const fechaSolicitud = formatearFecha(item.fechaSolicitud);
 
         row.innerHTML = `
-          <td>${fechaFormateada}</td>
-          <td>${item.cliente || 'Sin nombre'}</td>
-          <td>${item.contacto || 'Sin contacto'}</td>
-          <td>${item.servicio || 'Sin servicio'}</td>
-          <td>${item.descripcionAdmin || 'Sin descripción'}</td>
-          <td>${item.origen || 'Sin origen'}</td>
-          <td>${item.destino || 'Sin destino'}</td>
-          <td>${fechaSolicitud}</td>
-          <td>${item.trabajador || 'No asignado'}</td>
-          <td>${item.equipo || 'No asignado'}</td>
-          <td>
-            <div class="button-group">
-              <button class="edit-button" onclick="abrirModal(${index})">Editar</button>
-              <button class="delete-button" onclick="eliminar(${index})">Eliminar</button>
-            </div>
-          </td>
-        `;
+      <td>${fechaServicio}</td>
+      <td>${item.cliente || 'Sin nombre'}</td>
+      <td>${item.contacto || 'Sin contacto'}</td>
+      <td>${item.servicio || 'Sin servicio'}</td>
+      <td>${item.descripcionAdmin || 'Sin descripción'}</td>
+      <td>${item.origen || 'Sin origen'}</td>
+      <td>${item.destino || 'Sin destino'}</td>
+      <td>${fechaSolicitud}</td>
+      <td>${item.trabajador || 'No asignado'}</td>
+      <td>${item.equipo || 'No asignado'}</td>
+      <td>
+        <div class="button-group">
+          <button class="edit-button" onclick="abrirModal(${index})">Editar</button>
+          <button class="delete-button" onclick="eliminar(${index})">Eliminar</button>
+        </div>
+      </td>
+    `;
         tbody.appendChild(row);
       });
     }
@@ -195,4 +215,5 @@
     cargarAgenda();
   </script>
 </body>
+
 </html>
