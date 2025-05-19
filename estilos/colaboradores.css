@@ -9,9 +9,6 @@ body {
     background-repeat: no-repeat;
     background-size: cover;
     background-attachment: fixed;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 .container {
@@ -28,7 +25,6 @@ body {
     background-color: #9d98e6;
     border-radius: 8px;
     padding: 10px;
-    margin-bottom: 20px;
 }
 
 .menu ul {
